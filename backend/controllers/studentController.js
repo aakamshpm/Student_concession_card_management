@@ -82,7 +82,7 @@ const logoutStudent = asyncHandler(async (req, res) => {
 
 // Get individual student data
 const getStudentById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const id = req.studentId;
 
   try {
     const student = await Student.findById(id);
@@ -98,16 +98,8 @@ const getStudentById = asyncHandler(async (req, res) => {
 
 // Update student data
 const updateStudent = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const {
-    name,
-    email,
-    dateOfBirth,
-    address,
-    mobile,
-    phone,
-    institutionDetails,
-  } = req.body;
+  const id = req.studentId;
+  const { dateOfBirth, address, mobile, phone, institutionDetails } = req.body;
 
   if ((!dateOfBirth || !address, !mobile, !phone, !institutionDetails)) {
     res.status(500);
@@ -119,9 +111,14 @@ const updateStudent = asyncHandler(async (req, res) => {
       new: true,
       runValidators: true,
     });
-    res
-      .status(200)
-      .json({ message: "Student data updated", data: updatedStudent });
+    if (updatedStudent)
+      res
+        .status(200)
+        .json({ message: "Student data updated", data: updatedStudent });
+    else {
+      res.status(400);
+      throw new Error("Student data update failed");
+    }
   } catch (error) {
     throw new Error(error.message);
   }
