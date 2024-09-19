@@ -9,26 +9,26 @@ const Navbar = () => {
     <div className="flex justify-between mt-5 text-lg">
       <div className="navbar-right">
         <ul className="flex gap-6">
-          <li className="text-xs cursor-pointer hover:scale-105 transform transition-transform duration-300">
+          <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
             Home
           </li>
-          <li className="text-xs cursor-pointer hover:scale-105 transform transition-transform duration-300">
+          <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
             Apply
           </li>
-          <li className="text-xs cursor-pointer hover:scale-105 transform transition-transform duration-300">
+          <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
             Renew
           </li>
-          <li className="text-xs cursor-pointer hover:scale-105 transform transition-transform duration-300">
+          <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
             Status
           </li>
         </ul>
       </div>
       <div className="navbar-left relative flex flex-col items-end">
         <div className="flex justify-center items-center gap-1">
-          <CgUser size="20" />
-          <p className="text-xs text-primary-color">Student Name</p>
+          <CgUser size="25" />
+          <p className="text-lg text-primary-color">Student Name</p>
           <IoMdArrowDropdown
-            size="16"
+            size="20"
             className={`cursor-pointer transform transition-transform duration-[350ms] ${
               isOpen ? "rotate-180" : ""
             }`}
@@ -43,10 +43,10 @@ const Navbar = () => {
           }`}
         >
           <ul className="list-none p-2 text-base">
-            <li className="text-xs cursor-pointer p-2 text-white rounded hover:text-slate-900 transition-colors duration-200">
+            <li className="text-lg cursor-pointer p-2 text-white rounded hover:text-slate-900 transition-colors duration-200">
               Profile
             </li>
-            <li className="text-xs cursor-pointer p-2 text-white rounded hover:text-slate-900 transition-colors duration-200">
+            <li className="text-lg cursor-pointer p-2 text-white rounded hover:text-slate-900 transition-colors duration-200">
               Logout
             </li>
           </ul>

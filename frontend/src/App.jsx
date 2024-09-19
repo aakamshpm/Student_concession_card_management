@@ -1,14 +1,12 @@
-import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
+import { Outlet, useLocation } from "react-router-dom";
 
 const App = () => {
+  const location = useLocation();
   return (
     <div className="app">
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
+      {location.pathname !== "/login" && <Navbar />}
+      <Outlet />
     </div>
   );
 };
