@@ -1,7 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useLoginMutation } from "../slices/studentsApiSlice";
+import { setCredentials } from "../slices/authSlice";
 
 const Login = () => {
   const [currState, setCurrState] = useState("Login");
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const distpatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [login, { isLoading }] = useLoginMutation();
+
+  const { studentInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (studentInfo) navigate("/");
+  }, [navigate, studentInfo]);
+
+  const onChangeHandler = (e) => {
+    const { name, value } = e.target;
+    setData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const onLogin = async () => {
+    try {
+      const response = await login(data).unwrap();
+      distpatch(setCredentials({ ...response }));
+      navigate("/");
+    } catch (error) {
+      console.log(error.data.message);
+    }
+  };
+
   return (
     <div className="login w-full h-screen flex justify-center items-center">
       <div className=" w-[30em] h-[28em] border-primary-color border-2 border-solid rounded-2xl flex flex-col items-center">
@@ -16,20 +52,32 @@ const Login = () => {
               className="outline-none border-[1px] border-solid border-[#E5E5E5] w-5/6 h-10 p-5 rounded-md text-sm"
               type="text"
               placeholder="Enter your name"
+              name="name"
+              value={data.name}
+              onChange={onChangeHandler}
             />
           )}
           <input
             className="outline-none border-[1px] border-solid border-[#E5E5E5] w-5/6 h-10 p-5 rounded-md text-sm focus:border-black"
             type="email"
             placeholder="Enter your email"
+            name="email"
+            value={data.email}
+            onChange={onChangeHandler}
           />
           <input
             className="outline-none border-[1px] border-solid border-[#E5E5E5] w-5/6 h-10 p-5 rounded-md text-sm focus:border-black"
-            type="text"
+            type="password"
             placeholder="Enter your password"
+            name="password"
+            value={data.password}
+            onChange={onChangeHandler}
           />
         </div>
-        <button className="mt-8 mb-5 bg-primary-color py-2 px-7 text-white rounded-full hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105">
+        <button
+          onClick={onLogin}
+          className="mt-8 mb-5 bg-primary-color py-2 px-7 text-white rounded-full hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105"
+        >
           {currState === "Register" ? "Create new account" : "Login"}
         </button>
         {currState !== "Login" ? (
