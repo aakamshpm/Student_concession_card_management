@@ -56,9 +56,10 @@ const loginStudent = asyncHandler(async (req, res) => {
     const isMatch = await bcrypt.compare(password, student.password);
     if (isMatch) {
       generateToken(res, student._id, "student");
-      res
-        .status(200)
-        .json({ _id: student._id, name: student.name, email: student.email });
+      res.status(200).json({
+        message: "Student Logged in Successfully",
+        data: { _id: student._id, name: student.name, email: student.email },
+      });
     } else {
       res.status(404);
       throw new Error("Invalid Password");
