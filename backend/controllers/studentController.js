@@ -5,12 +5,7 @@ import Student from "../models/Student.js";
 
 // Register a student
 const registerStudent = asyncHandler(async (req, res) => {
-  const {
-    name,
-    institutionDetails: { institutionName },
-    email,
-    password,
-  } = req.body;
+  const { name, email, password } = req.body;
   if (!name || !email || !password) {
     res.status(400);
     throw new Error("Enter required fields");
@@ -28,7 +23,6 @@ const registerStudent = asyncHandler(async (req, res) => {
         name,
         email,
         password: hashedPassword,
-        institutionDetails: { institutionName },
       });
       if (student) {
         generateToken(res, student._id, "student");
