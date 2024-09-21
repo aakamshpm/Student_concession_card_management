@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { useLoginMutation } from "../slices/studentsApiSlice";
+import { useDispatch } from "react-redux";
+import {
+  useLoginMutation,
+  useRegisterMutation,
+} from "../slices/studentsApiSlice";
 import { setCredentials } from "../slices/authSlice";
 
 const Login = () => {
@@ -15,13 +18,8 @@ const Login = () => {
   const distpatch = useDispatch();
   const navigate = useNavigate();
 
-  const [login, { isLoading }] = useLoginMutation();
-
-  const { studentInfo } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    if (studentInfo) navigate("/");
-  }, [navigate, studentInfo]);
+  const [login] = useLoginMutation();
+  const [register] = useRegisterMutation();
 
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
@@ -30,8 +28,11 @@ const Login = () => {
 
   const onLogin = async () => {
     try {
-      const response = await login(data).unwrap();
-      distpatch(setCredentials({ ...response }));
+      let response;
+      if (currState === "Login") response = await login(data).unwrap();
+      else response = await register(data).unwrap();
+
+      distpatch(setCredentials({ ...response.data }));
       navigate("/");
     } catch (error) {
       console.log(error.data.message);

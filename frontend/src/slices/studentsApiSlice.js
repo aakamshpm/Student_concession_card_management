@@ -11,7 +11,14 @@ export const studentsApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    register: builder.mutation({
+      query: (data) => ({
+        url: `${STUDENTS_URL}/register`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation } = studentsApiSlice;
+export const { useLoginMutation, useRegisterMutation } = studentsApiSlice;
