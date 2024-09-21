@@ -15,7 +15,8 @@ const app = express();
 
 // cors set-up
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin:
+    process.env.NODE_ENV === "production" ? "http://localhost:5173" : "*  ",
   credentials: true,
   optionSuccessStatus: 200,
 };
