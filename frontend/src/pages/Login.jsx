@@ -34,8 +34,8 @@ const Login = () => {
 
       distpatch(setCredentials({ ...response.data }));
       navigate("/");
-    } catch (error) {
-      console.log(error.data.message);
+    } catch (err) {
+      console.log(err.error || err.data.message);
     }
   };
 

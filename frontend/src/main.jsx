@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import PublicRoute from "./components/PublicRoute.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import "./index.css";
+import Navbar from "./components/Navbar.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(

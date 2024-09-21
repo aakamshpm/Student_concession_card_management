@@ -2,9 +2,29 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { CgUser } from "react-icons/cg";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useLogoutMutation } from "../slices/studentsApiSlice";
+import { clearCredentials } from "../slices/authSlice";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [logout] = useLogoutMutation();
+  const { studentInfo } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const onLogout = async () => {
+    try {
+      await logout().unwrap();
+      dispatch(clearCredentials());
+      navigate("/login");
+    } catch (error) {
+      console.log(error.data.message);
+    }
+  };
+
   return (
     <div className="flex justify-between mt-5 text-lg">
       <div className="navbar-right">
@@ -13,10 +33,10 @@ const Navbar = () => {
             Home
           </li>
           <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
-            Apply
+            Verify
           </li>
           <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
-            Renew
+            Apply
           </li>
           <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
             Status
@@ -26,7 +46,7 @@ const Navbar = () => {
       <div className="navbar-left relative flex flex-col items-end">
         <div className="flex justify-center items-center gap-1">
           <CgUser size="25" />
-          <p className="text-lg text-primary-color">Student Name</p>
+          <p className="text-lg text-primary-color">{studentInfo.name}</p>
           <IoMdArrowDropdown
             size="20"
             className={`cursor-pointer transform transition-transform duration-[350ms] ${
@@ -46,7 +66,10 @@ const Navbar = () => {
             <li className="text-lg cursor-pointer p-2 text-white rounded hover:text-slate-900 transition-colors duration-200">
               Profile
             </li>
-            <li className="text-lg cursor-pointer p-2 text-white rounded hover:text-slate-900 transition-colors duration-200">
+            <li
+              onClick={onLogout}
+              className="text-lg cursor-pointer p-2 text-white rounded hover:text-slate-900 transition-colors duration-200"
+            >
               Logout
             </li>
           </ul>

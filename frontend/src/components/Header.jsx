@@ -1,10 +1,16 @@
+import { useSelector } from "react-redux";
+
 const Header = () => {
+  const { studentInfo } = useSelector((state) => state.auth);
   return (
     <div className="header mt-[3em]">
       <div className="title  text-5xl font-semibold">
         <h1 className="font-['Volkhov']">
-          Welcome{" "}
-          <span className="text-primary-color font-['Volkhov']">Bruce </span>
+          Welcome
+          <span className="text-primary-color font-['Volkhov']">
+            {" "}
+            {studentInfo.name}
+          </span>
         </h1>
       </div>
       <p className="mt-5 w-[50%] text-base text-[#666666] leading-7">
