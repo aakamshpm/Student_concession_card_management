@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const { studentInfo } = useSelector((state) => state.auth);
@@ -21,7 +22,7 @@ const Header = () => {
         your daily commute hassle-free
       </p>
       <button className="mt-3 py-3 px-4 text-base text-primary-color border-solid border-[1px] rounded-md border-primary-color outline-none hover:bg-primary-color hover:text-[#fff] transition-colors duration-150">
-        View Profile
+        <Link to="/profile">View Profile</Link>
       </button>
     </div>
   );

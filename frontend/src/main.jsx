@@ -1,8 +1,8 @@
-import { RouterProvider } from "react-router-dom";
 import { createRoot } from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
+import { SnackbarProvider } from "notistack";
 import { Provider } from "react-redux";
 import store from "./store.js";
-
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -14,7 +14,7 @@ import Login from "./pages/Login";
 import PublicRoute from "./components/PublicRoute.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import "./index.css";
-import Navbar from "./components/Navbar.jsx";
+import Profile from "./pages/Profile.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,6 +27,7 @@ export const router = createBrowserRouter(
       {/* ProtectedRoutes */}
       <Route element={<ProtectedRoute />}>
         <Route index element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
       </Route>
     </Route>
   )
@@ -34,6 +35,8 @@ export const router = createBrowserRouter(
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <RouterProvider router={router} />
+    <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
+      <RouterProvider router={router} />
+    </SnackbarProvider>
   </Provider>
 );

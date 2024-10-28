@@ -64,7 +64,7 @@ const Navbar = () => {
         >
           <ul className="list-none p-2 text-base">
             <li className="text-lg cursor-pointer p-2 text-white rounded hover:text-slate-900 transition-colors duration-200">
-              Profile
+              <Link to="/profile">Profile</Link>
             </li>
             <li
               onClick={onLogout}

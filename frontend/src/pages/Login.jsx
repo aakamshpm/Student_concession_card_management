@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useSnackbar } from "notistack";
 import {
   useLoginMutation,
   useRegisterMutation,
@@ -9,11 +10,14 @@ import { setCredentials } from "../slices/authSlice";
 
 const Login = () => {
   const [currState, setCurrState] = useState("Login");
+  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
     name: "",
     email: "",
     password: "",
   });
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const distpatch = useDispatch();
   const navigate = useNavigate();
@@ -27,15 +31,20 @@ const Login = () => {
   };
 
   const onLogin = async () => {
+    setIsLoading(true);
     try {
       let response;
-      if (currState === "Login") response = await login(data).unwrap();
-      else response = await register(data).unwrap();
-
+      if (currState === "Login") {
+        response = await login(data).unwrap();
+      } else {
+        response = await register(data).unwrap();
+      }
       distpatch(setCredentials({ ...response.data }));
       navigate("/");
     } catch (err) {
-      console.log(err.error || err.data.message);
+      setIsLoading(false);
+      enqueueSnackbar(err?.error || err?.data?.message, { variant: "error" });
+      console.log(err?.error || err?.data?.message);
     }
   };
 
@@ -77,9 +86,13 @@ const Login = () => {
         </div>
         <button
           onClick={onLogin}
-          className="mt-8 mb-5 bg-primary-color py-2 px-7 text-white rounded-full hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105"
+          className={`${
+            isLoading ? "button-loading" : ""
+          } relative mt-8 mb-5 bg-primary-color py-2 px-7  text-white rounded-full hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center`}
         >
-          {currState === "Register" ? "Create new account" : "Login"}
+          <p className="button-text">
+            {currState === "Register" ? "Register" : "Login"}
+          </p>
         </button>
         {currState !== "Login" ? (
           <p className="text-sm text-[#666666]">
