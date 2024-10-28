@@ -46,7 +46,7 @@ const Navbar = () => {
       <div className="navbar-left relative flex flex-col items-end">
         <div className="flex justify-center items-center gap-1">
           <CgUser size="25" />
-          <p className="text-lg text-primary-color">{studentInfo.name}</p>
+          <p className="text-lg text-primary-color">{studentInfo.firstName}</p>
           <IoMdArrowDropdown
             size="20"
             className={`cursor-pointer transform transition-transform duration-[350ms] ${

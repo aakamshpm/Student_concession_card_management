@@ -5,8 +5,8 @@ import Student from "../models/Student.js";
 
 // Register a student
 const registerStudent = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
+  const { firstName, lastName, email, password } = req.body;
+  if (!firstName || !lastName || !email || !password) {
     res.status(400);
     throw new Error("Enter required fields");
   }
@@ -20,7 +20,8 @@ const registerStudent = asyncHandler(async (req, res) => {
   } else
     try {
       const student = await Student.create({
-        name,
+        firstName,
+        lastName,
         email,
         password: hashedPassword,
       });
@@ -28,7 +29,12 @@ const registerStudent = asyncHandler(async (req, res) => {
         generateToken(res, student._id, "student");
         res.status(200).json({
           message: "Student Registered Successfully",
-          data: { _id: student._id, name: student.name, email: student.email },
+          data: {
+            _id: student._id,
+            firstName: student.firstName,
+            lastName: student.lastName,
+            email: student.email,
+          },
         });
       } else {
         res.status(400);
@@ -58,7 +64,12 @@ const loginStudent = asyncHandler(async (req, res) => {
       generateToken(res, student._id, "student");
       res.status(200).json({
         message: "Student Logged in Successfully",
-        data: { _id: student._id, name: student.name, email: student.email },
+        data: {
+          _id: student._id,
+          firstName: student.firstName,
+          lastName: student.lastName,
+          email: student.email,
+        },
       });
     } else {
       res.status(404);

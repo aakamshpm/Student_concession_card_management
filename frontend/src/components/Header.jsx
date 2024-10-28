@@ -10,7 +10,7 @@ const Header = () => {
           Welcome
           <span className="text-primary-color font-['Volkhov']">
             {" "}
-            {studentInfo.name}
+            {studentInfo.firstName}
           </span>
         </h1>
       </div>

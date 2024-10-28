@@ -12,7 +12,8 @@ const Login = () => {
   const [currState, setCurrState] = useState("Login");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
   });
@@ -30,7 +31,8 @@ const Login = () => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const onLogin = async () => {
+  const onLogin = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
     try {
       let response;
@@ -50,50 +52,65 @@ const Login = () => {
 
   return (
     <div className="login w-full h-screen flex justify-center items-center">
-      <div className=" w-[30em] h-[28em] border-primary-color border-2 border-solid rounded-2xl flex flex-col items-center">
+      <div className="w-[30em] h-[28em] border-primary-color border-2 border-solid rounded-2xl flex flex-col items-center">
         <h1 className="text-black mt-7 text-2xl font-semibold">
           Student {currState}
         </h1>
-        <div className="input-fields mt-16 flex flex-col items-center gap-5 w-full">
-          {currState === "Login" ? (
-            <></>
-          ) : (
+        <form
+          onSubmit={onLogin}
+          className="flex flex-col items-center w-[26em]"
+        >
+          <div className="input-fields mt-16 flex flex-col items-center gap-5 w-[80%]">
+            {currState === "Login" ? (
+              <></>
+            ) : (
+              <div className="flex justify-center gap-2">
+                <input
+                  className="outline-none border-[1px] border-solid border-[#E5E5E5] w-[55%] h-10 p-5 rounded-md text-sm"
+                  type="text"
+                  placeholder="First Name"
+                  name="firstName"
+                  value={data.firstName}
+                  onChange={onChangeHandler}
+                />
+                <input
+                  className="outline-none border-[1px] border-solid border-[#E5E5E5] w-[45%] h-10 p-5 rounded-md text-sm"
+                  type="text"
+                  placeholder="First Name"
+                  name="lastName"
+                  value={data.lastName}
+                  onChange={onChangeHandler}
+                />
+              </div>
+            )}
             <input
-              className="outline-none border-[1px] border-solid border-[#E5E5E5] w-5/6 h-10 p-5 rounded-md text-sm"
-              type="text"
-              placeholder="Enter your name"
-              name="name"
-              value={data.name}
+              className="outline-none border-[1px] border-solid border-[#E5E5E5] w-full h-10 p-5 rounded-md text-sm focus:border-black"
+              type="email"
+              placeholder="Enter your email"
+              name="email"
+              value={data.email}
               onChange={onChangeHandler}
             />
-          )}
-          <input
-            className="outline-none border-[1px] border-solid border-[#E5E5E5] w-5/6 h-10 p-5 rounded-md text-sm focus:border-black"
-            type="email"
-            placeholder="Enter your email"
-            name="email"
-            value={data.email}
-            onChange={onChangeHandler}
-          />
-          <input
-            className="outline-none border-[1px] border-solid border-[#E5E5E5] w-5/6 h-10 p-5 rounded-md text-sm focus:border-black"
-            type="password"
-            placeholder="Enter your password"
-            name="password"
-            value={data.password}
-            onChange={onChangeHandler}
-          />
-        </div>
-        <button
-          onClick={onLogin}
-          className={`${
-            isLoading ? "button-loading" : ""
-          } relative mt-8 mb-5 bg-primary-color py-2 px-7  text-white rounded-full hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center`}
-        >
-          <p className="button-text">
-            {currState === "Register" ? "Register" : "Login"}
-          </p>
-        </button>
+            <input
+              className="outline-none border-[1px] border-solid border-[#E5E5E5] w-full h-10 p-5 rounded-md text-sm focus:border-black"
+              type="password"
+              placeholder="Enter your password"
+              name="password"
+              value={data.password}
+              onChange={onChangeHandler}
+            />
+          </div>
+          <button
+            type="submit"
+            className={`${
+              isLoading ? "button-loading" : ""
+            } relative mt-8 mb-5 bg-primary-color py-2 px-7  text-white rounded-full hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center`}
+          >
+            <p className="button-text">
+              {currState === "Register" ? "Register" : "Login"}
+            </p>
+          </button>
+        </form>
         {currState !== "Login" ? (
           <p className="text-sm text-[#666666]">
             Already have an account?{" "}
