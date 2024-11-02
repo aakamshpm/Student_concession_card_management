@@ -16,16 +16,16 @@ const studentSchema = new mongoose.Schema({
   mobile: { type: Number },
   institutionDetails: {
     institutionName: { type: String },
+    institutionStreet: { type: String },
+    institutionCity: { type: String },
+    institutionPincode: { type: Number },
     course: {
       courseName: { type: String },
       currentYear: { type: Number },
       courseDuration: { type: Number },
     },
-    institutionStreet: { type: String },
-    institutionCity: { type: String },
-    institutionPincode: { type: Number },
   },
-
+  routes: [{ startingPoint: { type: String }, destination: { type: String } }],
   isEligible: { type: Boolean, default: false },
 });
 

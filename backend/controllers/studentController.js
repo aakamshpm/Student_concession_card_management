@@ -130,10 +130,55 @@ const updateStudent = asyncHandler(async (req, res) => {
   }
 });
 
+//Handle student application for concession card
+const applyForCard = asyncHandler(async (req, res) => {
+  const id = req.studentId;
+  const routes = req.body;
+
+  console.log(routes);
+
+  //check if routes is empty
+  if (!routes[0]) {
+    res.status(400);
+    throw new Error("Enter atleast one route");
+  }
+
+  //check if first route contain desired places
+  if (routes[0].startingPoint && routes[0].destination) {
+  } else {
+    res.status(400);
+    throw new Error("Enter required places");
+  }
+
+  if (routes.length <= 4) {
+    try {
+      const resp = await Student.findByIdAndUpdate(
+        id,
+        { routes: routes },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+      res
+        .status(200)
+        .json({ message: "Route(s) added successfully", data: resp });
+    } catch (err) {
+      res.status(400);
+      console.log(err);
+      throw new Error("Route(s) failed to add");
+    }
+  } else {
+    res.status(400);
+    throw new Error("Routes limit exceed");
+  }
+});
+
 export {
   registerStudent,
   loginStudent,
   logoutStudent,
   getStudentById,
   updateStudent,
+  applyForCard,
 };

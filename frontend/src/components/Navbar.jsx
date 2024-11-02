@@ -36,7 +36,7 @@ const Navbar = () => {
             Verify
           </li>
           <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
-            Apply
+            <Link to="/apply">Apply</Link>
           </li>
           <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
             Status

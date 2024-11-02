@@ -13,8 +13,9 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import PublicRoute from "./components/PublicRoute.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import "./index.css";
 import Profile from "./pages/Profile.jsx";
+import Apply from "./pages/Apply.jsx";
+import "./index.css";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,6 +29,7 @@ export const router = createBrowserRouter(
       <Route element={<ProtectedRoute />}>
         <Route index element={<Home />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/apply" element={<Apply />} />
       </Route>
     </Route>
   )
