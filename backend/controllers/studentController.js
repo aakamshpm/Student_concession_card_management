@@ -91,7 +91,7 @@ const getStudentById = asyncHandler(async (req, res) => {
   const id = req.studentId;
 
   try {
-    const student = await Student.findById(id);
+    const student = await Student.findById(id).select("-password");
     if (!student) {
       res.status(404);
       throw new Error("Student not found");

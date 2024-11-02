@@ -13,21 +13,13 @@ connectDB();
 
 const app = express();
 
-// cors set-up
-const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production" ? "http://localhost:5173" : "*  ",
-  credentials: true,
-  optionSuccessStatus: 200,
-};
+app.use(cookieParser());
 
-app.use(cors(corsOptions));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 //middleware for parsing JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use(cookieParser());
 
 //Routes
 app.use("/api/students", studentRoutes);

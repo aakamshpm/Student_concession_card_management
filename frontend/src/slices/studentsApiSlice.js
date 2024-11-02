@@ -9,6 +9,7 @@ export const studentsApiSlice = apiSlice.injectEndpoints({
         url: `${STUDENTS_URL}/login`,
         method: "POST",
         body: data,
+        credentials: "include",
       }),
     }),
     register: builder.mutation({
@@ -16,6 +17,7 @@ export const studentsApiSlice = apiSlice.injectEndpoints({
         url: `${STUDENTS_URL}/register`,
         method: "POST",
         body: data,
+        credentials: "include",
       }),
     }),
     logout: builder.mutation({
@@ -23,10 +25,31 @@ export const studentsApiSlice = apiSlice.injectEndpoints({
         url: `${STUDENTS_URL}/logout`,
         method: "POST",
         body: data,
+        credentials: "include",
+      }),
+    }),
+    update: builder.mutation({
+      query: (data) => ({
+        url: `${STUDENTS_URL}/update`,
+        method: "POST",
+        body: data,
+        credentials: "include",
+      }),
+    }),
+    getStudentData: builder.query({
+      query: () => ({
+        url: `${STUDENTS_URL}/id`,
+        method: "GET",
+        credentials: "include",
       }),
     }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLogoutMutation } =
-  studentsApiSlice;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useLogoutMutation,
+  useUpdateMutation,
+  useGetStudentDataQuery,
+} = studentsApiSlice;

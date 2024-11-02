@@ -14,9 +14,9 @@ const protect = (role) => {
           throw new Error("Invalid role");
         }
         if (role === "student") {
-          req.studentId = decoded.id;
+          req.studentId = decoded.userId;
         } else if (role === "admin") {
-          req.adminId = decoded.id;
+          req.adminId = decoded.userId;
         }
         next();
       } catch (error) {
