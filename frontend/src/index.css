@@ -51,7 +51,7 @@ body {
   }
 }
 
-.profile input {
+.input-fields input {
   outline: none;
   border: 1px solid #999999;
   border-radius: 10px;
@@ -61,7 +61,7 @@ body {
   text-decoration: none;
 }
 
-.profile input:focus {
+.input-fields input:focus {
   border: 1px solid #444444;
 }
 

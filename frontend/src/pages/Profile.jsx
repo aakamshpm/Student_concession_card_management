@@ -146,8 +146,6 @@ const Profile = () => {
     });
   };
 
-  console.log(profileData);
-
   const onSubmit = async () => {
     try {
       const res = await update(profileData).unwrap();
@@ -167,7 +165,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="profile flex flex-col">
+    <div className="profile input-fields flex flex-col">
       <h2 className="font-[Volkhov] text-4xl font-bold mt-10 mb-4">Profile</h2>
       <form className="profile-form flex gap-20 ">
         <div className="profile-left w-[40%] flex flex-col gap-y-4">

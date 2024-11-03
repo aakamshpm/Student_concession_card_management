@@ -135,8 +135,6 @@ const applyForCard = asyncHandler(async (req, res) => {
   const id = req.studentId;
   const routes = req.body;
 
-  console.log(routes);
-
   //check if routes is empty
   if (!routes[0]) {
     res.status(400);
@@ -150,27 +148,37 @@ const applyForCard = asyncHandler(async (req, res) => {
     throw new Error("Enter required places");
   }
 
-  if (routes.length <= 4) {
-    try {
-      const resp = await Student.findByIdAndUpdate(
-        id,
-        { routes: routes },
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
-      res
-        .status(200)
-        .json({ message: "Route(s) added successfully", data: resp });
-    } catch (err) {
+  const isApplied = await Student.findById(id, "applied");
+  console.log(isApplied);
+
+  if (!isApplied.applied) {
+    if (routes.length <= 4) {
+      try {
+        const resp = await Student.findByIdAndUpdate(
+          id,
+          { routes: routes },
+          {
+            new: true,
+            runValidators: true,
+          }
+        );
+        await Student.findByIdAndUpdate(id, { applied: true });
+        res.status(200).json({
+          message: "Applied Successfully. Please check in a while for update",
+          data: resp,
+        });
+      } catch (err) {
+        res.status(400);
+        console.log(err);
+        throw new Error("Route(s) failed to add");
+      }
+    } else {
       res.status(400);
-      console.log(err);
-      throw new Error("Route(s) failed to add");
+      throw new Error("Routes limit exceed");
     }
   } else {
     res.status(400);
-    throw new Error("Routes limit exceed");
+    throw new Error("Application already sent");
   }
 });
 

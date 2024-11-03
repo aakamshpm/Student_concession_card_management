@@ -56,19 +56,19 @@ const Navbar = () => {
           />
         </div>
         <div
-          className={`absolute mt-8 border border-[#F7F8FC] rounded-md shadow-lg bg-[#FA7436] transform transition-all duration-300 ease-out ${
+          className={`absolute mt-9 border border-[#F7F8FC] rounded-md shadow-lg bg-[#FA7436] transform transition-all duration-300 ease-out ${
             isOpen
-              ? "opacity-100 scale-100"
+              ? "opacity-100 scale-105"
               : "opacity-0 scale-95 pointer-events-none"
           }`}
         >
           <ul className="list-none p-2 text-base">
-            <li className="text-lg cursor-pointer p-2 text-white rounded hover:text-slate-900 transition-colors duration-200">
+            <li className="text-lg cursor-pointer p-2 text-white rounded hover:scale-105 transition-transform duration-200">
               <Link to="/profile">Profile</Link>
             </li>
             <li
               onClick={onLogout}
-              className="text-lg cursor-pointer p-2 text-white rounded hover:text-slate-900 transition-colors duration-200"
+              className="text-lg cursor-pointer p-2 text-white rounded hover:scale-105 transition-transform duration-200"
             >
               Logout
             </li>

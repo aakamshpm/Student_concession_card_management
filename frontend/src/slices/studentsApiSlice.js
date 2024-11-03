@@ -43,6 +43,14 @@ export const studentsApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
+    applyForConcession: builder.mutation({
+      query: (data) => ({
+        url: `${STUDENTS_URL}/apply`,
+        method: "POST",
+        body: data,
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
@@ -52,4 +60,5 @@ export const {
   useLogoutMutation,
   useUpdateMutation,
   useGetStudentDataQuery,
+  useApplyForConcessionMutation,
 } = studentsApiSlice;
