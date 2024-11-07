@@ -45,42 +45,42 @@ const Profile = () => {
       setProfileData((prev) => {
         return {
           ...prev,
-          firstName: studenData.firstName || prev.firstName,
-          lastName: studenData.lastName || prev.lastName,
-          email: studenData.email || prev.email,
+          firstName: studenData?.firstName || prev.firstName,
+          lastName: studenData?.lastName || prev.lastName,
+          email: studenData?.email || prev.email,
           address: {
-            houseName: studenData.address.houseName || prev.address.houseName,
-            houseCity: studenData.address.houseCity || prev.address.houseCity,
+            houseName: studenData?.address?.houseName || prev.address.houseName,
+            houseCity: studenData?.address?.houseCity || prev.address.houseCity,
             houseStreet:
-              studenData.address.houseStreet || prev.address.houseStreet,
+              studenData?.address?.houseStreet || prev.address.houseStreet,
             housePincode:
-              studenData.address.housePincode || prev.address.housePincode,
+              studenData?.address?.housePincode || prev.address.housePincode,
           },
-          mobile: studenData.mobile || prev.mobile,
-          phone: studenData.phone || prev.phone,
+          mobile: studenData?.mobile || prev.mobile,
+          phone: studenData?.phone || prev.phone,
           institutionDetails: {
             institutionName:
-              studenData.institutionDetails.institutionName ||
+              studenData?.institutionDetails?.institutionName ||
               prev.institutionDetails.institutionName,
             course: {
               courseName:
-                studenData.institutionDetails.course.courseName ||
+                studenData?.institutionDetails?.course?.courseName ||
                 prev.institutionDetails.course.courseName,
               currentYear:
-                studenData.institutionDetails.course.currentYear ||
+                studenData?.institutionDetails?.course?.currentYear ||
                 prev.institutionDetails.course.currentYear,
               courseDuration:
-                studenData.institutionDetails.course.courseDuration ||
+                studenData?.institutionDetails?.course?.courseDuration ||
                 prev.institutionDetails.course.courseDuration,
             },
             institutionStreet:
-              studenData.institutionDetails.institutionStreet ||
+              studenData?.institutionDetails?.institutionStreet ||
               prev.institutionDetails.institutionStreet,
             institutionCity:
-              studenData.institutionDetails.institutionCity ||
+              studenData?.institutionDetails?.institutionCity ||
               prev.institutionDetails.institutionCity,
             institutionPincode:
-              studenData.institutionDetails.institutionPincode ||
+              studenData?.institutionDetails?.institutionPincode ||
               prev.institutionDetails.institutionPincode,
           },
         };
@@ -158,7 +158,8 @@ const Profile = () => {
   };
 
   if (error) {
-    enqueueSnackbar(error?.message || "Profile data not able to fetch", {
+    console.log(error);
+    enqueueSnackbar(error?.data.message || "Profile data not able to fetch", {
       variant: "error",
     });
     navigate("/");
