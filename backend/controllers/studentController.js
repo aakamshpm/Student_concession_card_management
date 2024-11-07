@@ -135,6 +135,14 @@ const applyForCard = asyncHandler(async (req, res) => {
   const id = req.studentId;
   const routes = req.body;
 
+  const eligibility = await Student.findById(id, "isEligible");
+  const isApplied = await Student.findById(id, "applied");
+
+  if (!eligibility.isEligible) {
+    res.status(400);
+    throw new Error("Student not verified. Please confirm identity");
+  }
+
   //check if routes is empty
   if (!routes[0]) {
     res.status(400);
@@ -147,9 +155,6 @@ const applyForCard = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Enter required places");
   }
-
-  const isApplied = await Student.findById(id, "applied");
-  console.log(isApplied);
 
   if (!isApplied.applied) {
     if (routes.length <= 4) {

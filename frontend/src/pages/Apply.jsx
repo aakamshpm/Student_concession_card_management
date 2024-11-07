@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import { enqueueSnackbar } from "notistack";
-import { useApplyForConcessionMutation } from "../slices/studentsApiSlice";
+import {
+  useApplyForConcessionMutation,
+  useGetStudentDataQuery,
+} from "../slices/studentsApiSlice";
 import StudentRoutesField from "../components/StudentRoutesField";
+import { Link } from "react-router-dom";
 
 const Apply = () => {
   const [routeFieldComponent, setRouteFieldComponent] = useState([
@@ -15,7 +19,8 @@ const Apply = () => {
     },
   ]);
 
-  const [applyForConcession] = useApplyForConcessionMutation();
+  const { data: studenData, error } = useGetStudentDataQuery();
+  const [applyForConcession, { isLoading }] = useApplyForConcessionMutation();
 
   const addRouteField = () => {
     setRoutes((prev) => [...prev, { startingPoint: "", destination: "" }]);
@@ -35,7 +40,6 @@ const Apply = () => {
     });
   };
   const applyForConcessionCard = async () => {
-    console.log(routes);
     try {
       const response = await applyForConcession(routes).unwrap();
       enqueueSnackbar(response.message, { variant: "success" });
@@ -52,6 +56,14 @@ const Apply = () => {
         <h2 className="text-3xl font-semibold font-[Volkhov]">
           Apply for Student Concession Card
         </h2>
+        {!studenData?.isEligible && (
+          <p className="mt-3 text-red-500">
+            Student identity not verified.{" "}
+            <Link className="font-semibold" to="/verify">
+              Click to Verify
+            </Link>
+          </p>
+        )}
         {routeFieldComponent.map((item, i) => (
           <StudentRoutesField
             key={i}
@@ -75,7 +87,9 @@ const Apply = () => {
       )}
       <button
         onClick={applyForConcessionCard}
-        className={`self-end bg-primary-color text-white font-medium p-3 rounded-md transition-transform duration-100 hover:scale-105`}
+        className={`${
+          isLoading ? "button-loading" : ""
+        }  self-end bg-primary-color text-white font-medium p-3 rounded-md transition-transform duration-100 hover:scale-105`}
       >
         <p className="button-text">Apply</p>
       </button>
