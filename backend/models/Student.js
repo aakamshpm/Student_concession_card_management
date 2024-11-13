@@ -25,6 +25,7 @@ const studentSchema = new mongoose.Schema({
       courseDuration: { type: Number },
     },
   },
+  studentIdCard: { type: String, default: null },
   routes: [{ startingPoint: { type: String }, destination: { type: String } }],
   applied: { type: Boolean, default: false },
   isEligible: { type: Boolean, default: false },

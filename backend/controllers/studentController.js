@@ -1,7 +1,9 @@
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
+import fs from "fs";
 import generateToken from "../utils/generateToken.js";
 import Student from "../models/Student.js";
+import Application from "../models/Application.js";
 
 // Register a student
 const registerStudent = asyncHandler(async (req, res) => {
@@ -130,13 +132,90 @@ const updateStudent = asyncHandler(async (req, res) => {
   }
 });
 
+const uploadIdCard = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    res.status(400);
+    throw new Error("No file uploaded");
+  }
+  try {
+    const student = await Student.findById(req.studentId);
+
+    // delete existing id card and upload new one
+    if (student.studentIdCard)
+      fs.unlinkSync(`./uploads/${student.studentIdCard}`);
+
+    //upload an id card
+    student.studentIdCard = req.file.filename;
+    await student.save();
+    res.status(200).json({ message: "ID Card uploaded!" });
+  } catch (err) {
+    res.status(500);
+    throw new Error(err.message);
+  }
+});
+
+const applyForVerification = asyncHandler(async (req, res) => {
+  try {
+    const student = await Student.findById(req.studentId);
+    if (!student.studentIdCard) {
+      res.status(400);
+      throw new Error("Please upload your ID Card");
+    }
+
+    let application = await Application.findOne({ studentId: req.studentId });
+
+    // apply for verification
+    if (!application) {
+      try {
+        application = await Application.create({
+          studentId: req.studentId,
+          verification: { applied: true, studentIdCard: student.studentIdCard },
+        });
+        res
+          .status(200)
+          .json({ message: "Student ID Card sent for verification!" });
+      } catch (error) {
+        res.status(400);
+        throw new Error(error.message);
+      }
+    } else if (application?.verification?.applied) {
+      res.status(400);
+      throw new Error("Already applied for verification");
+    }
+  } catch (err) {
+    res.status(400);
+    throw new Error(err.message);
+  }
+});
+
+// check verification status
+const checkVerificationStatus = asyncHandler(async (req, res) => {
+  try {
+    const application = await Application.findOne({ studentId: req.studentId });
+
+    if (!application?.verification?.applied) {
+      res.status(500);
+      throw new Error("Please apply for verification");
+    }
+    res
+      .status(200)
+      .json({
+        studentId: application.studentId,
+        status: application.verification.status,
+      });
+  } catch (err) {
+    res.status(400);
+    throw new Error(err.message);
+  }
+});
+
 //Handle student application for concession card
 const applyForCard = asyncHandler(async (req, res) => {
   const id = req.studentId;
   const routes = req.body;
 
+  //checking elibibility
   const eligibility = await Student.findById(id, "isEligible");
-  const isApplied = await Student.findById(id, "applied");
 
   if (!eligibility.isEligible) {
     res.status(400);
@@ -155,6 +234,9 @@ const applyForCard = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Enter required places");
   }
+
+  //checking whether already applied
+  const isApplied = await Student.findById(id, "applied");
 
   if (!isApplied.applied) {
     if (routes.length <= 4) {
@@ -193,5 +275,8 @@ export {
   logoutStudent,
   getStudentById,
   updateStudent,
+  uploadIdCard,
+  applyForVerification,
+  checkVerificationStatus,
   applyForCard,
 };

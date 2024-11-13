@@ -8,7 +8,13 @@ const applicationSchema = mongoose.Schema(
       passImgUrl: { type: String },
     },
     verification: {
-      status: { type: Boolean, default: false },
+      applied: { type: Boolean, default: false },
+      studentIdCard: { type: String, default: null },
+      status: {
+        type: String,
+        enum: ["Pending", "Approved", "Rejected"],
+        default: "Pending",
+      },
     },
   },
   { timestamps: true }
