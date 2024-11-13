@@ -16,6 +16,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Profile from "./pages/Profile.jsx";
 import Apply from "./pages/Apply.jsx";
 import "./index.css";
+import Verify from "./pages/Verify.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,6 +31,7 @@ export const router = createBrowserRouter(
         <Route index element={<Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/apply" element={<Apply />} />
+        <Route path="/verify" element={<Verify />} />
       </Route>
     </Route>
   )
