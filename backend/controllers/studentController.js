@@ -138,6 +138,12 @@ const uploadIdCard = asyncHandler(async (req, res) => {
     throw new Error("No file uploaded");
   }
   try {
+    const application = await Application.findOne({ studentId: req.studentId });
+    if (application?.verification?.applied) {
+      res.status(400);
+      throw new Error("Already applied for verification");
+    }
+
     const student = await Student.findById(req.studentId);
 
     // delete existing id card and upload new one
@@ -197,12 +203,10 @@ const checkVerificationStatus = asyncHandler(async (req, res) => {
       res.status(500);
       throw new Error("Please apply for verification");
     }
-    res
-      .status(200)
-      .json({
-        studentId: application.studentId,
-        status: application.verification.status,
-      });
+    res.status(200).json({
+      studentId: application.studentId,
+      status: application.verification.status,
+    });
   } catch (err) {
     res.status(400);
     throw new Error(err.message);

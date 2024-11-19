@@ -15,7 +15,7 @@ import {
 
 const router = express.Router();
 
-router.get("/id", protect("student"), getStudentById);
+router.get("/", protect("student"), getStudentById);
 router.post("/register", registerStudent);
 router.post("/login", loginStudent);
 router.post("/logout", logoutStudent);

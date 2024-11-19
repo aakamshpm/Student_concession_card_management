@@ -38,8 +38,24 @@ export const studentsApiSlice = apiSlice.injectEndpoints({
     }),
     getStudentData: builder.query({
       query: () => ({
-        url: `${STUDENTS_URL}/id`,
+        url: `${STUDENTS_URL}/`,
         method: "GET",
+        credentials: "include",
+      }),
+    }),
+    uploadIdCard: builder.mutation({
+      query: (data) => ({
+        url: `${STUDENTS_URL}/upload-id-card`,
+        method: "POST",
+        body: data,
+        credentials: "include",
+      }),
+    }),
+    applyForVerification: builder.mutation({
+      query: (data) => ({
+        url: `${STUDENTS_URL}/verify`,
+        method: "POST",
+        body: data,
         credentials: "include",
       }),
     }),
@@ -60,5 +76,7 @@ export const {
   useLogoutMutation,
   useUpdateMutation,
   useGetStudentDataQuery,
+  useUploadIdCardMutation,
+  useApplyForVerificationMutation,
   useApplyForConcessionMutation,
 } = studentsApiSlice;
