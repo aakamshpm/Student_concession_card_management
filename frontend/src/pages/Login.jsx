@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import {
+  useGetStudentDataQuery,
   useLoginMutation,
   useRegisterMutation,
 } from "../slices/studentsApiSlice";
@@ -25,6 +26,7 @@ const Login = () => {
 
   const [login] = useLoginMutation();
   const [register] = useRegisterMutation();
+  const { refetch } = useGetStudentDataQuery();
 
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
@@ -42,6 +44,7 @@ const Login = () => {
         response = await register(data).unwrap();
       }
       distpatch(setCredentials({ ...response.data }));
+      await refetch();
       navigate("/");
     } catch (err) {
       setIsLoading(false);
@@ -76,7 +79,7 @@ const Login = () => {
                 <input
                   className="outline-none border-[1px] border-solid border-[#E5E5E5] w-[45%] h-10 p-5 rounded-md text-sm"
                   type="text"
-                  placeholder="First Name"
+                  placeholder="Last Name"
                   name="lastName"
                   value={data.lastName}
                   onChange={onChangeHandler}

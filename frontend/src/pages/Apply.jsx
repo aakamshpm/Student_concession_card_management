@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import { enqueueSnackbar } from "notistack";
 import {
@@ -19,8 +19,12 @@ const Apply = () => {
     },
   ]);
 
-  const { data: studenData, error } = useGetStudentDataQuery();
+  const { data: studentData, error, refetch } = useGetStudentDataQuery();
   const [applyForConcession, { isLoading }] = useApplyForConcessionMutation();
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   const addRouteField = () => {
     setRoutes((prev) => [...prev, { startingPoint: "", destination: "" }]);
@@ -56,14 +60,26 @@ const Apply = () => {
         <h2 className="text-3xl font-semibold font-[Volkhov]">
           Apply for Student Concession Card
         </h2>
-        {!studenData?.isEligible && (
+        {studentData?.eligibility?.status === "false" ? (
           <p className="mt-3 text-red-500">
             Student identity not verified.{" "}
             <Link className="font-semibold" to="/verify">
               Click to Verify
             </Link>
           </p>
+        ) : studentData?.eligibility?.status === "pending" ? (
+          <p className="mt-3 text-red-500">
+            Student ID under verification. Please wait.
+          </p>
+        ) : studentData?.eligibility?.status === "approved" ? (
+          <p className="mt-3 text-green-500">
+            You are eligible for the Student Concession Card. Proceed with your
+            application.
+          </p>
+        ) : (
+          <></>
         )}
+
         {routeFieldComponent.map((item, i) => (
           <StudentRoutesField
             key={i}

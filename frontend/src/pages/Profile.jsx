@@ -33,7 +33,7 @@ const Profile = () => {
     },
   });
 
-  const { data: studenData, error } = useGetStudentDataQuery();
+  const { data: studenData, error, refetch } = useGetStudentDataQuery();
   const [update, { isLoading }] = useUpdateMutation();
 
   const navigate = useNavigate();

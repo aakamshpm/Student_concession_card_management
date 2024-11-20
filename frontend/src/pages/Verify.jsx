@@ -37,7 +37,7 @@ const Verify = () => {
       enqueueSnackbar(response?.message || "ID card uploaded successfully!", {
         variant: "success",
       });
-      navigate("/");
+      navigate("/apply");
     } catch (error) {
       enqueueSnackbar(
         error?.err ||
@@ -69,7 +69,7 @@ const Verify = () => {
             <p>Email: {studentData?.email}</p>
             <p>Mobile: {studentData?.mobile}</p>
             <p>
-              Address: {studentData?.address.houseName}{" "}
+              Address: {studentData?.address?.houseName}{" "}
               {studentData?.address?.houseStreet}{" "}
               {studentData?.address?.houseCity}
               {studentData?.address?.housePincode}

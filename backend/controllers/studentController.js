@@ -138,13 +138,11 @@ const uploadIdCard = asyncHandler(async (req, res) => {
     throw new Error("No file uploaded");
   }
   try {
-    const application = await Application.findOne({ studentId: req.studentId });
-    if (application?.verification?.applied) {
+    const student = await Student.findById(req.studentId);
+    if (student.eligibility.status !== "false") {
       res.status(400);
       throw new Error("Already applied for verification");
     }
-
-    const student = await Student.findById(req.studentId);
 
     // delete existing id card and upload new one
     if (student.studentIdCard)
@@ -173,18 +171,21 @@ const applyForVerification = asyncHandler(async (req, res) => {
     // apply for verification
     if (!application) {
       try {
+        student.eligibility.status = "pending";
+        await student.save();
         application = await Application.create({
           studentId: req.studentId,
-          verification: { applied: true, studentIdCard: student.studentIdCard },
         });
         res
           .status(200)
           .json({ message: "Student ID Card sent for verification!" });
       } catch (error) {
+        student.eligibility.status = "false";
+        await student.save();
         res.status(400);
         throw new Error(error.message);
       }
-    } else if (application?.verification?.applied) {
+    } else if (student?.eligibility?.status !== "false") {
       res.status(400);
       throw new Error("Already applied for verification");
     }
@@ -197,15 +198,11 @@ const applyForVerification = asyncHandler(async (req, res) => {
 // check verification status
 const checkVerificationStatus = asyncHandler(async (req, res) => {
   try {
-    const application = await Application.findOne({ studentId: req.studentId });
+    const student = await Student.findById(req.studentId);
 
-    if (!application?.verification?.applied) {
-      res.status(500);
-      throw new Error("Please apply for verification");
-    }
     res.status(200).json({
-      studentId: application.studentId,
-      status: application.verification.status,
+      studentId: student._id,
+      status: student?.eligibility?.status,
     });
   } catch (err) {
     res.status(400);
@@ -219,13 +216,16 @@ const applyForCard = asyncHandler(async (req, res) => {
   const routes = req.body;
 
   //checking elibibility
-  const eligibility = await Student.findById(id, "isEligible");
+  const student = await Student.findById(id, "eligibility");
 
-  if (!eligibility.isEligible) {
+  if (student.eligibility.status !== "approved") {
     res.status(400);
-    throw new Error("Student not verified. Please confirm identity");
+    throw new Error(
+      student.eligibility.status === "pending"
+        ? "Student verification is still pending. Please wait."
+        : "Student not verified. Please confirm identity."
+    );
   }
-
   //check if routes is empty
   if (!routes[0]) {
     res.status(400);
@@ -260,7 +260,6 @@ const applyForCard = asyncHandler(async (req, res) => {
         });
       } catch (err) {
         res.status(400);
-        console.log(err);
         throw new Error("Route(s) failed to add");
       }
     } else {

@@ -28,7 +28,15 @@ const studentSchema = new mongoose.Schema({
   studentIdCard: { type: String, default: null },
   routes: [{ startingPoint: { type: String }, destination: { type: String } }],
   applied: { type: Boolean, default: false },
-  isEligible: { type: Boolean, default: false },
+  eligibility: {
+    status: {
+      type: String,
+      enum: ["false", "pending", "approved", "rejected"],
+      default: "false",
+    },
+    lastUpdated: { type: Date, default: Date.now },
+    reason: { type: String },
+  },
 });
 
 const Student = mongoose.model("Student", studentSchema);
