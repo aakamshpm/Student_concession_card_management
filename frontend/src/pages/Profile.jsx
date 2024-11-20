@@ -19,7 +19,6 @@ const Profile = () => {
       housePincode: "",
     },
     mobile: "",
-    phone: "",
     institutionDetails: {
       institutionName: "",
       course: {
@@ -30,6 +29,7 @@ const Profile = () => {
       institutionStreet: "",
       institutionCity: "",
       institutionPincode: "",
+      institutionPhone: "",
     },
   });
 
@@ -57,7 +57,6 @@ const Profile = () => {
               studenData?.address?.housePincode || prev.address.housePincode,
           },
           mobile: studenData?.mobile || prev.mobile,
-          phone: studenData?.phone || prev.phone,
           institutionDetails: {
             institutionName:
               studenData?.institutionDetails?.institutionName ||
@@ -83,6 +82,9 @@ const Profile = () => {
               studenData?.institutionDetails?.institutionPincode ||
               prev.institutionDetails.institutionPincode,
           },
+          institutionPhone:
+            studenData?.institutionDetails?.institutionPhone ||
+            prev.institutionDetails.institutionPhone,
         };
       });
       if (studenData.dateOfBirth) {
@@ -214,13 +216,6 @@ const Profile = () => {
                 maxLength={10}
                 placeholder="Mobile"
               />
-              <input
-                onChange={onChangeHandler}
-                name="phone"
-                value={profileData.phone}
-                type="number"
-                placeholder="Phone"
-              />
             </div>
           </div>
           <div className="profile-address">
@@ -290,6 +285,14 @@ const Profile = () => {
                 onChange={onChangeHandler}
                 type="text"
                 placeholder="Pincode"
+              />
+
+              <input
+                name="institutionPhone"
+                value={profileData.institutionDetails.institutionPhone}
+                onChange={onChangeHandler}
+                type="text"
+                placeholder="Phone"
               />
             </div>
             <div className="items-center gap-4 grid grid-cols-2">

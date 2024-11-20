@@ -12,13 +12,14 @@ const studentSchema = new mongoose.Schema({
     houseCity: { type: String },
     housePincode: { type: Number },
   },
-  phone: { type: Number },
   mobile: { type: Number },
   institutionDetails: {
     institutionName: { type: String },
     institutionStreet: { type: String },
     institutionCity: { type: String },
     institutionPincode: { type: Number },
+    institutionPhone: { type: Number },
+
     course: {
       courseName: { type: String },
       currentYear: { type: Number },
