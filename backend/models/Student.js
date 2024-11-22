@@ -28,7 +28,16 @@ const studentSchema = new mongoose.Schema({
   },
   studentIdCard: { type: String, default: null },
   routes: [{ startingPoint: { type: String }, destination: { type: String } }],
-  applied: { type: Boolean, default: false },
+  application: {
+    status: {
+      type: String,
+      enum: ["false", "pending", "withdrawn", "approved", "rejected"],
+      default: "false",
+    },
+    lastUpdated: { type: Date, default: Date.now },
+    reason: { type: String },
+  },
+  concessionCardUrl: { type: String },
   eligibility: {
     status: {
       type: String,

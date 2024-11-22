@@ -2,7 +2,6 @@ import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
 import generateToken from "../utils/generateToken.js";
 import Admin from "../models/Admin.js";
-import Application from "../models/Application.js";
 
 const authAdmin = asyncHandler(async (req, res) => {
   const { username, password } = req.body;

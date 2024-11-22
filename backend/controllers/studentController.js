@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import fs from "fs";
 import generateToken from "../utils/generateToken.js";
 import Student from "../models/Student.js";
-import Application from "../models/Application.js";
 
 // Register a student
 const registerStudent = asyncHandler(async (req, res) => {
@@ -166,16 +165,12 @@ const applyForVerification = asyncHandler(async (req, res) => {
       throw new Error("Please upload your ID Card");
     }
 
-    let application = await Application.findOne({ studentId: req.studentId });
-
     // apply for verification
-    if (!application) {
+    if (student?.eligibility?.status === "false") {
       try {
         student.eligibility.status = "pending";
         await student.save();
-        application = await Application.create({
-          studentId: req.studentId,
-        });
+
         res
           .status(200)
           .json({ message: "Student ID Card sent for verification!" });
@@ -185,7 +180,7 @@ const applyForVerification = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error(error.message);
       }
-    } else if (student?.eligibility?.status !== "false") {
+    } else {
       res.status(400);
       throw new Error("Already applied for verification");
     }
@@ -216,7 +211,7 @@ const applyForCard = asyncHandler(async (req, res) => {
   const routes = req.body;
 
   //checking elibibility
-  const student = await Student.findById(id, "eligibility");
+  const student = await Student.findById(id);
 
   if (student.eligibility.status !== "approved") {
     res.status(400);
@@ -226,34 +221,33 @@ const applyForCard = asyncHandler(async (req, res) => {
         : "Student not verified. Please confirm identity."
     );
   }
-  //check if routes is empty
-  if (!routes[0]) {
-    res.status(400);
-    throw new Error("Enter atleast one route");
-  }
 
-  //check if first route contain desired places
-  if (routes[0].startingPoint && routes[0].destination) {
-  } else {
-    res.status(400);
-    throw new Error("Enter required places");
-  }
+  // check if already applied
+  if (student.application.status === "false") {
+    //check if routes is empty
+    if (!routes[0]) {
+      res.status(400);
+      throw new Error("Enter atleast one route");
+    }
 
-  //checking whether already applied
-  const isApplied = await Student.findById(id, "applied");
+    //check if first route contain desired places
+    if (routes[0].startingPoint && routes[0].destination) {
+    } else {
+      res.status(400);
+      throw new Error("Enter required places");
+    }
 
-  if (!isApplied.applied) {
     if (routes.length <= 4) {
       try {
         const resp = await Student.findByIdAndUpdate(
           id,
-          { routes: routes },
+          { routes: routes, "application.status": "pending" },
           {
             new: true,
             runValidators: true,
           }
         );
-        await Student.findByIdAndUpdate(id, { applied: true });
+
         res.status(200).json({
           message: "Applied Successfully. Please check in a while for update",
           data: resp,
@@ -268,7 +262,7 @@ const applyForCard = asyncHandler(async (req, res) => {
     }
   } else {
     res.status(400);
-    throw new Error("Application already sent");
+    throw new Error("Already applied for concession card");
   }
 });
 

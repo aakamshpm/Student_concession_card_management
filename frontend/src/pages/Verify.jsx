@@ -83,6 +83,7 @@ const Verify = () => {
             <p>
               Pincode: {studentData?.institutionDetails?.institutionPincode}
             </p>
+            <p>Phone: {studentData?.institutionDetails?.institutionPhone}</p>
           </section>
           <h3 className="text-lg mt-3">Course Details</h3>
           <section className="p-2 border-2 rounded-md border-red-400">
