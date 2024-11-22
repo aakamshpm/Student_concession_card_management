@@ -131,6 +131,33 @@ const updateStudent = asyncHandler(async (req, res) => {
   }
 });
 
+const isStudentProfileComplete = (student) => {
+  if (
+    !student.firstName ||
+    !student.lastName ||
+    !student.password ||
+    !student.email ||
+    !student.dateOfBirth ||
+    !student.address?.houseName ||
+    !student.address?.houseStreet ||
+    !student.address?.houseCity ||
+    !student.address?.housePincode ||
+    !student.mobile ||
+    !student.institutionDetails?.institutionName ||
+    !student.institutionDetails?.institutionStreet ||
+    !student.institutionDetails?.institutionCity ||
+    !student.institutionDetails?.institutionPincode ||
+    !student.institutionDetails?.institutionPhone ||
+    !student.institutionDetails.course?.courseName ||
+    !student.institutionDetails.course?.currentYear ||
+    !student.institutionDetails.course?.courseDuration
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
 const uploadIdCard = asyncHandler(async (req, res) => {
   if (!req.file) {
     res.status(400);
@@ -160,6 +187,13 @@ const uploadIdCard = asyncHandler(async (req, res) => {
 const applyForVerification = asyncHandler(async (req, res) => {
   try {
     const student = await Student.findById(req.studentId);
+
+    // check if profile is complete
+    if (!isStudentProfileComplete(student)) {
+      res.status(400);
+      throw new Error("Please fill every field in your Student Profile");
+    }
+
     if (!student.studentIdCard) {
       res.status(400);
       throw new Error("Please upload your ID Card");
@@ -271,6 +305,7 @@ export {
   loginStudent,
   logoutStudent,
   getStudentById,
+  isStudentProfileComplete,
   updateStudent,
   uploadIdCard,
   applyForVerification,
