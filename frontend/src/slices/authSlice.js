@@ -11,15 +11,31 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-      state.studentInfo = action.payload;
-      localStorage.setItem("studentInfo", JSON.stringify(action.payload));
+      const expiration = new Date();
+      expiration.setDate(expiration.getDate() + 1); // 1 day from now
+
+      const studentData = {
+        ...action.payload,
+        expiration: expiration.getTime(),
+      };
+
+      state.studentInfo = studentData;
+      localStorage.setItem("studentInfo", JSON.stringify(studentData));
     },
-    clearCredentials: (state, action) => {
+    clearCredentials: (state) => {
       state.studentInfo = "";
       localStorage.removeItem("studentInfo");
+    },
+    clearExpiredCredentials: (state) => {
+      const studentInfo = JSON.parse(localStorage.getItem("studentInfo"));
+      if (studentInfo && studentInfo.expiration < Date.now()) {
+        state.studentInfo = "";
+        localStorage.removeItem("studentInfo");
+      }
     },
   },
 });
 
-export const { setCredentials, clearCredentials } = authSlice.actions;
+export const { setCredentials, clearCredentials, clearExpiredCredentials } =
+  authSlice.actions;
 export default authSlice.reducer;

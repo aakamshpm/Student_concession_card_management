@@ -21,7 +21,7 @@ const Login = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const distpatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [login] = useLoginMutation();
@@ -36,20 +36,21 @@ const Login = () => {
   const onLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
     try {
-      let response;
-      if (currState === "Login") {
-        response = await login(data).unwrap();
-      } else {
-        response = await register(data).unwrap();
-      }
-      distpatch(setCredentials({ ...response.data }));
+      const response =
+        currState === "Login"
+          ? await login(data).unwrap()
+          : await register(data).unwrap();
+
+      dispatch(setCredentials({ ...response.data }));
       await refetch();
       navigate("/");
     } catch (err) {
-      setIsLoading(false);
       enqueueSnackbar(err?.error || err?.data?.message, { variant: "error" });
-      console.log(err?.error || err?.data?.message);
+      console.error(err?.error || err?.data?.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 

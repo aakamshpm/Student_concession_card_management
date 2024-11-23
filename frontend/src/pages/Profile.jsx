@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
+import { useSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import {
   useGetStudentDataQuery,
   useUpdateMutation,
 } from "../slices/studentsApiSlice";
-import { useSnackbar } from "notistack";
-import { useNavigate } from "react-router-dom";
+import "react-phone-number-input/style.css";
+
+//TODO: indian phone no field, course duration matching with course year, refetch, pincode validate, city selection
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -33,8 +37,10 @@ const Profile = () => {
     },
   });
 
-  const { data: studenData, error, refetch } = useGetStudentDataQuery();
-  const [update, { isLoading }] = useUpdateMutation();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { data: studenData, error } = useGetStudentDataQuery();
+  const [update] = useUpdateMutation();
 
   const navigate = useNavigate();
 
@@ -61,6 +67,18 @@ const Profile = () => {
             institutionName:
               studenData?.institutionDetails?.institutionName ||
               prev.institutionDetails.institutionName,
+            institutionStreet:
+              studenData?.institutionDetails?.institutionStreet ||
+              prev.institutionDetails.institutionStreet,
+            institutionCity:
+              studenData?.institutionDetails?.institutionCity ||
+              prev.institutionDetails.institutionCity,
+            institutionPincode:
+              studenData?.institutionDetails?.institutionPincode ||
+              prev.institutionDetails.institutionPincode,
+            institutionPhone:
+              studenData?.institutionDetails?.institutionPhone ||
+              prev.institutionDetails.institutionPhone,
             course: {
               courseName:
                 studenData?.institutionDetails?.course?.courseName ||
@@ -72,19 +90,7 @@ const Profile = () => {
                 studenData?.institutionDetails?.course?.courseDuration ||
                 prev.institutionDetails.course.courseDuration,
             },
-            institutionStreet:
-              studenData?.institutionDetails?.institutionStreet ||
-              prev.institutionDetails.institutionStreet,
-            institutionCity:
-              studenData?.institutionDetails?.institutionCity ||
-              prev.institutionDetails.institutionCity,
-            institutionPincode:
-              studenData?.institutionDetails?.institutionPincode ||
-              prev.institutionDetails.institutionPincode,
           },
-          institutionPhone:
-            studenData?.institutionDetails?.institutionPhone ||
-            prev.institutionDetails.institutionPhone,
         };
       });
       if (studenData.dateOfBirth) {
@@ -149,18 +155,39 @@ const Profile = () => {
   };
 
   const onSubmit = async () => {
-    try {
-      const res = await update(profileData).unwrap();
-      enqueueSnackbar(res?.message, { variant: "success" });
-    } catch (error) {
-      enqueueSnackbar(error?.error || error?.data?.message, {
-        variant: "error",
-      });
+    setIsLoading(true);
+    const isValid = validateFormData();
+    if (isValid) {
+      try {
+        const res = await update(profileData).unwrap();
+        setIsLoading(false);
+        enqueueSnackbar(res?.message, { variant: "success" });
+      } catch (error) {
+        setIsLoading(false);
+        enqueueSnackbar(error?.error || error?.data?.message, {
+          variant: "error",
+        });
+      }
     }
   };
 
+  const validateFormData = () => {
+    // PhoneInput component sets "mobile" to undefined if its empty
+    if (!profileData.mobile) profileData.mobile = "";
+    else {
+      const isValid = isValidPhoneNumber(profileData.mobile);
+      if (!isValid) {
+        enqueueSnackbar("Please enter a valid mobile number", {
+          variant: "error",
+        });
+        setIsLoading(false);
+        return false;
+      }
+    }
+    return true;
+  };
+
   if (error) {
-    console.log(error);
     enqueueSnackbar(error?.data.message || "Profile data not able to fetch", {
       variant: "error",
     });
@@ -208,12 +235,13 @@ const Profile = () => {
                 type="email"
                 placeholder="Enter your email"
               />
-              <input
-                onChange={onChangeHandler}
+              <PhoneInput
+                defaultCountry="IN"
+                onChange={(value) =>
+                  setProfileData((prevData) => ({ ...prevData, mobile: value }))
+                }
                 name="mobile"
                 value={profileData.mobile}
-                type="number"
-                maxLength={10}
                 placeholder="Mobile"
               />
             </div>
@@ -305,7 +333,7 @@ const Profile = () => {
               />
               <select
                 name="currentYear"
-                className="mt-[12px] p-3 rounded-lg"
+                className="p-3 rounded-lg"
                 value={profileData.institutionDetails.course.currentYear}
                 onChange={onChangeHandler}
               >

@@ -21,7 +21,7 @@ const Navbar = () => {
       dispatch(clearCredentials());
       navigate("/login");
     } catch (error) {
-      console.log(error.data.message);
+      console.log(error?.data?.message || error?.message);
     }
   };
 

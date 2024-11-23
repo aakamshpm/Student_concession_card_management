@@ -51,14 +51,19 @@ body {
   }
 }
 
+.input-fields h4 {
+  margin-bottom: 5px;
+}
+
 .input-fields input {
   outline: none;
   border: 1px solid #999999;
   border-radius: 10px;
   padding: 10px;
   text-align: center;
-  margin-top: 15px;
+  /* margin-top: 15px; */
   text-decoration: none;
+  margin: 8px 0px;
 }
 
 .input-fields input:focus {
@@ -73,4 +78,8 @@ input::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+.input-fields select {
+  margin: 8px 0;
 }

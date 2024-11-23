@@ -12,7 +12,7 @@ const studentSchema = new mongoose.Schema({
     houseCity: { type: String },
     housePincode: { type: Number },
   },
-  mobile: { type: Number },
+  mobile: { type: String },
   institutionDetails: {
     institutionName: { type: String },
     institutionStreet: { type: String },
