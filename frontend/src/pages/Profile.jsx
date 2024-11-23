@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import validator from "validator";
 import {
   useGetStudentDataQuery,
   useUpdateMutation,
 } from "../slices/studentsApiSlice";
 import "react-phone-number-input/style.css";
 
-//TODO: indian phone no field, course duration matching with course year, refetch, pincode validate, city selection
+//TODO:  pincode validate, city selection
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -39,7 +40,7 @@ const Profile = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data: studenData, error } = useGetStudentDataQuery();
+  const { data: studentData, error } = useGetStudentDataQuery();
   const [update] = useUpdateMutation();
 
   const navigate = useNavigate();
@@ -47,54 +48,56 @@ const Profile = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    if (studenData) {
+    if (studentData) {
       setProfileData((prev) => {
         return {
           ...prev,
-          firstName: studenData?.firstName || prev.firstName,
-          lastName: studenData?.lastName || prev.lastName,
-          email: studenData?.email || prev.email,
+          firstName: studentData?.firstName || prev.firstName,
+          lastName: studentData?.lastName || prev.lastName,
+          email: studentData?.email || prev.email,
           address: {
-            houseName: studenData?.address?.houseName || prev.address.houseName,
-            houseCity: studenData?.address?.houseCity || prev.address.houseCity,
+            houseName:
+              studentData?.address?.houseName || prev.address.houseName,
+            houseCity:
+              studentData?.address?.houseCity || prev.address.houseCity,
             houseStreet:
-              studenData?.address?.houseStreet || prev.address.houseStreet,
+              studentData?.address?.houseStreet || prev.address.houseStreet,
             housePincode:
-              studenData?.address?.housePincode || prev.address.housePincode,
+              studentData?.address?.housePincode || prev.address.housePincode,
           },
-          mobile: studenData?.mobile || prev.mobile,
+          mobile: studentData?.mobile || prev.mobile,
           institutionDetails: {
             institutionName:
-              studenData?.institutionDetails?.institutionName ||
+              studentData?.institutionDetails?.institutionName ||
               prev.institutionDetails.institutionName,
             institutionStreet:
-              studenData?.institutionDetails?.institutionStreet ||
+              studentData?.institutionDetails?.institutionStreet ||
               prev.institutionDetails.institutionStreet,
             institutionCity:
-              studenData?.institutionDetails?.institutionCity ||
+              studentData?.institutionDetails?.institutionCity ||
               prev.institutionDetails.institutionCity,
             institutionPincode:
-              studenData?.institutionDetails?.institutionPincode ||
+              studentData?.institutionDetails?.institutionPincode ||
               prev.institutionDetails.institutionPincode,
             institutionPhone:
-              studenData?.institutionDetails?.institutionPhone ||
+              studentData?.institutionDetails?.institutionPhone ||
               prev.institutionDetails.institutionPhone,
             course: {
               courseName:
-                studenData?.institutionDetails?.course?.courseName ||
+                studentData?.institutionDetails?.course?.courseName ||
                 prev.institutionDetails.course.courseName,
               currentYear:
-                studenData?.institutionDetails?.course?.currentYear ||
+                studentData?.institutionDetails?.course?.currentYear ||
                 prev.institutionDetails.course.currentYear,
               courseDuration:
-                studenData?.institutionDetails?.course?.courseDuration ||
+                studentData?.institutionDetails?.course?.courseDuration ||
                 prev.institutionDetails.course.courseDuration,
             },
           },
         };
       });
-      if (studenData.dateOfBirth) {
-        const date = new Date(studenData.dateOfBirth);
+      if (studentData.dateOfBirth) {
+        const date = new Date(studentData.dateOfBirth);
 
         //Format the date to YYYY-MM-DD
         const formattedDate = date.toISOString().split("T")[0];
@@ -104,7 +107,7 @@ const Profile = () => {
         }));
       }
     }
-  }, [studenData]);
+  }, [studentData]);
 
   const onChangeHandler = (e) => {
     const { value, name } = e.target;
@@ -175,6 +178,7 @@ const Profile = () => {
     // PhoneInput component sets "mobile" to undefined if its empty
     if (!profileData.mobile) profileData.mobile = "";
     else {
+      // validate mobile number
       const isValid = isValidPhoneNumber(profileData.mobile);
       if (!isValid) {
         enqueueSnackbar("Please enter a valid mobile number", {
@@ -184,8 +188,39 @@ const Profile = () => {
         return false;
       }
     }
+
+    // validate email
+    if (!validator.isEmail(profileData.email)) {
+      enqueueSnackbar("Please enter a valid email", { variant: "error" });
+      setIsLoading(false);
+      return false;
+    }
+
+    // validate institution phone
+    if (
+      !validator.isMobilePhone(
+        profileData.institutionDetails.institutionPhone
+      ) &&
+      profileData.institutionDetails.institutionPhone !== ""
+    ) {
+      enqueueSnackbar("Please enter a phone(Institution)", {
+        variant: "error",
+      });
+      setIsLoading(false);
+      return false;
+    }
+
     return true;
   };
+
+  // Generating courseyear dynamically
+  const courseYearOption = Array.from(
+    {
+      length:
+        parseInt(profileData.institutionDetails.course.courseDuration) || 0,
+    },
+    (_, index) => index + 1
+  );
 
   if (error) {
     enqueueSnackbar(error?.data.message || "Profile data not able to fetch", {
@@ -332,18 +367,6 @@ const Profile = () => {
                 onChange={onChangeHandler}
               />
               <select
-                name="currentYear"
-                className="p-3 rounded-lg"
-                value={profileData.institutionDetails.course.currentYear}
-                onChange={onChangeHandler}
-              >
-                <option value="">Select course year</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-              </select>
-              <select
                 name="courseDuration"
                 className="mt-[12px] p-3 rounded-lg"
                 value={profileData.institutionDetails.course.courseDuration}
@@ -354,6 +377,19 @@ const Profile = () => {
                 <option value="2">2</option>
                 <option value="3">3</option>
                 <option value="4">4</option>
+              </select>
+              <select
+                name="currentYear"
+                className="p-3 rounded-lg"
+                value={profileData.institutionDetails.course.currentYear}
+                onChange={onChangeHandler}
+              >
+                <option value="">Select course year</option>
+                {courseYearOption.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

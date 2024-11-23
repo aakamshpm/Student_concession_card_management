@@ -18,7 +18,7 @@ const studentSchema = new mongoose.Schema({
     institutionStreet: { type: String },
     institutionCity: { type: String },
     institutionPincode: { type: Number },
-    institutionPhone: { type: Number },
+    institutionPhone: { type: String },
 
     course: {
       courseName: { type: String },
