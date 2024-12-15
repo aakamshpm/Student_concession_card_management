@@ -15,8 +15,8 @@ import PublicRoute from "./components/PublicRoute.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Profile from "./pages/Profile.jsx";
 import Apply from "./pages/Apply.jsx";
-import "./index.css";
 import Verify from "./pages/Verify.jsx";
+import "./index.css";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(

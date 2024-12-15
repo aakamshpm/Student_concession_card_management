@@ -10,14 +10,16 @@ import {
 import { setCredentials } from "../slices/authSlice";
 
 const Login = () => {
-  const [currState, setCurrState] = useState("Login");
-  const [isLoading, setIsLoading] = useState(false);
+  const [currState, setCurrState] = useState("Login"); // Login or Register
+  const [isLoading, setIsLoading] = useState(false); // Loading state for button
   const [data, setData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
+  const [passwordError, setPasswordError] = useState(""); // For password mismatch
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -30,7 +32,19 @@ const Login = () => {
 
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
+
     setData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "confirmPassword" || name === "password") setPasswordError(""); // setting password error to null
+
+    if (name === "confirmPassword" && value !== data.password)
+      setPasswordError("Passwords do not match"); // checking for password match
+    else if (
+      name === "password" &&
+      data.confirmPassword &&
+      value !== data.confirmPassword
+    )
+      setPasswordError("Passwords do not match");
   };
 
   const onLogin = async (e) => {
@@ -56,7 +70,11 @@ const Login = () => {
 
   return (
     <div className="login w-full h-screen flex justify-center items-center">
-      <div className="w-[30em] h-[28em] border-primary-color border-2 border-solid rounded-2xl flex flex-col items-center">
+      <div
+        className={`${
+          currState === "Login" ? "w-[28em] h-[26em]" : "w-[32em] h-[32em]"
+        }  border-primary-color border-2 border-solid rounded-2xl flex flex-col items-center`}
+      >
         <h1 className="text-black mt-7 text-2xl font-semibold">
           Student {currState}
         </h1>
@@ -64,7 +82,7 @@ const Login = () => {
           onSubmit={onLogin}
           className="flex flex-col items-center w-[26em]"
         >
-          <div className="input-fields mt-16 flex flex-col items-center gap-5 w-[80%]">
+          <div className="input-fields mt-10 flex flex-col items-center gap-4 w-[80%]">
             {currState === "Login" ? (
               <></>
             ) : (
@@ -103,12 +121,38 @@ const Login = () => {
               value={data.password}
               onChange={onChangeHandler}
             />
+            {currState !== "Login" && (
+              <>
+                <input
+                  className="outline-none border-[1px] border-solid border-[#E5E5E5] w-full h-10 p-5 rounded-md text-sm focus:border-black"
+                  type="password"
+                  placeholder="Confirm your password"
+                  name="confirmPassword"
+                  value={data.confirmPassword}
+                  onChange={onChangeHandler}
+                />
+                {passwordError && (
+                  <span className="text-red-600 text-xs -mt-4">
+                    {passwordError}
+                  </span>
+                )}
+              </>
+            )}
           </div>
+
           <button
             type="submit"
             className={`${
               isLoading ? "button-loading" : ""
-            } relative mt-8 mb-5 bg-primary-color py-2 px-7  text-white rounded-full hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center`}
+            } mt-6 mb-5 bg-primary-color text-white font-medium px-7 py-2 rounded-full ${
+              currState === "Register" &&
+              passwordError &&
+              "opacity-60 cursor-not-allowed"
+            }  ${
+              (!passwordError || currState === "Login") &&
+              "opacity-100 transition-transform duration-100 hover:scale-105"
+            }`}
+            disabled={(passwordError && currState === "Register") || isLoading}
           >
             <p className="button-text">
               {currState === "Register" ? "Register" : "Login"}

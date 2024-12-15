@@ -203,7 +203,7 @@ const Profile = () => {
       ) &&
       profileData.institutionDetails.institutionPhone !== ""
     ) {
-      enqueueSnackbar("Please enter a phone(Institution)", {
+      enqueueSnackbar("Please enter a valid phone(Institution)", {
         variant: "error",
       });
       setIsLoading(false);
