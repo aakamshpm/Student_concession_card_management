@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BsFillCloudUploadFill } from "react-icons/bs";
 import { enqueueSnackbar } from "notistack";
@@ -10,7 +10,7 @@ import {
 
 const Verify = () => {
   const [preview, setPreview] = useState(null);
-  const { data: studentData, error } = useGetStudentDataQuery();
+  const { data: studentData, refetch } = useGetStudentDataQuery();
   const [uploadIdCard] = useUploadIdCardMutation();
   const [applyForVerification, { isLoading }] =
     useApplyForVerificationMutation();
@@ -48,11 +48,22 @@ const Verify = () => {
     }
   };
 
+  useEffect(() => {
+    refetch();
+  }, []);
+
   return (
     <div className="flex flex-col mt-5 w-max">
       <h2 className="font-[Volkhov] text-3xl font-semibold">
         Verify your student identity
       </h2>
+      {studentData?.eligibility?.status !== "false" ? (
+        <p className="mt-3 text-red-500">
+          Student already applied for verification.
+        </p>
+      ) : (
+        <></>
+      )}
       <div className="grid grid-cols-2 gap-x-16 ">
         <div>
           <h3 className="text-lg mt-4">Student Details</h3>
@@ -72,8 +83,8 @@ const Verify = () => {
               Address: {studentData?.address?.houseName}{" "}
               {studentData?.address?.houseStreet}{" "}
               {studentData?.address?.houseCity}
-              {studentData?.address?.housePincode}
             </p>
+            <p>Pincode: {studentData?.address?.housePincode} </p>
           </section>
           <h3 className="text-lg mt-3">Institution Details</h3>
           <section className="p-2 border-2 rounded-md border-red-400">
@@ -92,7 +103,7 @@ const Verify = () => {
               Duration:{" "}
               {studentData?.institutionDetails?.course?.courseDuration}
             </p>
-            <p>Year: {studentData?.institutionDetails?.course?.courseYear}</p>
+            <p>Year: {studentData?.institutionDetails?.course?.currentYear}</p>
           </section>
           <p className="text-red-600 mt-2">
             *Please ensure that the student details match with ID Card
@@ -129,7 +140,14 @@ const Verify = () => {
       <button
         onClick={applyForIdVerification}
         className={`${isLoading ? "button-loading" : ""} self-end
-            mt-2 bg-primary-color text-white font-medium p-3 rounded-md transition-transform duration-100 hover:scale-105`}
+            mt-2 bg-primary-color text-white font-medium p-3 rounded-md ${
+              studentData?.eligibility?.status !== "false" &&
+              "opacity-60 cursor-not-allowed"
+            } ${
+          studentData?.eligibility?.status === "false" &&
+          " transition-transform duration-100 hover:scale-105"
+        }`}
+        disabled={studentData?.eligibility?.status !== "false"}
       >
         <p className="button-text">Apply for verification</p>
       </button>

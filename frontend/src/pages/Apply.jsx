@@ -60,7 +60,11 @@ const Apply = () => {
         <h2 className="text-3xl font-semibold font-[Volkhov]">
           Apply for Student Concession Card
         </h2>
-        {studentData?.eligibility?.status === "false" ? (
+        {studentData?.application?.status !== "false" ? (
+          <p className="mt-3 text-red-500">
+            Student already applied for Concession card.
+          </p>
+        ) : studentData?.eligibility?.status === "false" ? (
           <p className="mt-3 text-red-500">
             Student identity not verified.{" "}
             <Link className="font-semibold" to="/verify">
@@ -105,7 +109,14 @@ const Apply = () => {
         onClick={applyForConcessionCard}
         className={`${
           isLoading ? "button-loading" : ""
-        }  self-end bg-primary-color text-white font-medium p-3 rounded-md transition-transform duration-100 hover:scale-105`}
+        }  self-end bg-primary-color text-white font-medium p-3 rounded-md ${
+          studentData?.application?.status !== "false" &&
+          "opacity-60  cursor-not-allowed"
+        }  ${
+          studentData?.application?.status === "false" &&
+          "transition-transform duration-100 hover:scale-105"
+        }`}
+        disabled={studentData?.application.status !== "false"}
       >
         <p className="button-text">Apply</p>
       </button>
