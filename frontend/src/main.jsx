@@ -17,6 +17,7 @@ import Profile from "./pages/Profile.jsx";
 import Apply from "./pages/Apply.jsx";
 import Verify from "./pages/Verify.jsx";
 import "./index.css";
+import Status from "./pages/Status.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -32,6 +33,7 @@ export const router = createBrowserRouter(
         <Route path="/profile" element={<Profile />} />
         <Route path="/apply" element={<Apply />} />
         <Route path="/verify" element={<Verify />} />
+        <Route path="/status" element={<Status />} />
       </Route>
     </Route>
   )
