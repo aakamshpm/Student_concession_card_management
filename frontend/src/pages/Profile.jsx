@@ -8,6 +8,7 @@ import {
   useUpdateMutation,
 } from "../slices/studentsApiSlice";
 import "react-phone-number-input/style.css";
+import InputField from "../components/InputField";
 
 //TODO:  pincode validate, city selection
 
@@ -40,7 +41,11 @@ const Profile = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data: studentData, error } = useGetStudentDataQuery();
+  const {
+    data: studentData,
+    error,
+    isLoading: isStudentDataLoading,
+  } = useGetStudentDataQuery();
   const [update] = useUpdateMutation();
 
   const navigate = useNavigate();
@@ -229,6 +234,9 @@ const Profile = () => {
     navigate("/");
   }
 
+  if (isStudentDataLoading)
+    return <p className="mt-5 ml-4 font-semibold">Loading...</p>;
+
   return (
     <div className="profile input-fields flex flex-col">
       <h2 className="font-[Volkhov] text-4xl font-bold mt-10 mb-4">Profile</h2>
@@ -237,81 +245,98 @@ const Profile = () => {
           <div className="profile-name">
             <h4 className="font-medium text-xl">Personal</h4>
             <div className="grid grid-cols-2 gap-4">
-              <input
-                onChange={onChangeHandler}
-                name="firstName"
+              {/* First Name */}
+              <InputField
+                label={"First Name"}
+                name={"firstName"}
+                type={"text"}
+                placeholder={"First Name"}
                 value={profileData.firstName}
-                type="text"
-                placeholder="First Name"
+                onChangeHandler={onChangeHandler}
               />
-              <input
-                onChange={onChangeHandler}
-                name="lastName"
+              {/* Last Name */}
+              <InputField
+                label={"Last Name"}
+                name={"lastName"}
+                type={"text"}
+                placeholder={"Last Name"}
                 value={profileData.lastName}
-                type="text"
-                placeholder="Last Name"
+                onChangeHandler={onChangeHandler}
               />
-              <input
-                onChange={onChangeHandler}
-                name="dateOfBirth"
+              {/* Date Of Birth  */}
+              <InputField
+                label={"Date of Birth"}
+                name={"dateOfBirth"}
+                type={"date"}
+                placeholder={"Last Name"}
                 value={profileData.dateOfBirth}
-                type="date"
-                placeholder="Date of birth"
+                onChangeHandler={onChangeHandler}
               />
             </div>
           </div>
           <div className="profile-email">
             <h4 className="font-medium text-xl">Contact</h4>
             <div className="grid grid-cols-2 gap-4">
-              <input
-                onChange={onChangeHandler}
-                name="email"
+              <InputField
+                label={"Email"}
+                name={"email"}
+                type={"email"}
+                placeholder={"Enter your email"}
                 value={profileData.email}
-                type="email"
-                placeholder="Enter your email"
+                onChangeHandler={onChangeHandler}
               />
-              <PhoneInput
-                defaultCountry="IN"
-                onChange={(value) =>
-                  setProfileData((prevData) => ({ ...prevData, mobile: value }))
-                }
-                name="mobile"
-                value={profileData.mobile}
-                placeholder="Mobile"
-              />
+              <div className="phone-input">
+                <label htmlFor="mobile">Mobile</label>
+                <PhoneInput
+                  defaultCountry="IN"
+                  onChange={(value) =>
+                    setProfileData((prevData) => ({
+                      ...prevData,
+                      mobile: value,
+                    }))
+                  }
+                  name="mobile"
+                  value={profileData.mobile}
+                  placeholder="Enter your mobile no"
+                />
+              </div>
             </div>
           </div>
           <div className="profile-address">
             <h4 className="font-medium text-xl">Address</h4>
             <div className="grid grid-cols-2 gap-4">
-              <input
-                onChange={onChangeHandler}
-                name="houseName"
+              <InputField
+                label={"House Name"}
+                name={"houseName"}
+                type={"text"}
+                placeholder={"Enter your House Name"}
                 value={profileData.address.houseName}
-                type="text"
-                placeholder="House Name"
+                onChangeHandler={onChangeHandler}
               />
-              <input
-                onChange={onChangeHandler}
-                name="houseStreet"
+              <InputField
+                label={"House Street"}
+                name={"houseStreet"}
+                type={"text"}
+                placeholder={"House Street"}
                 value={profileData.address.houseStreet}
-                type="text"
-                placeholder="Street"
+                onChangeHandler={onChangeHandler}
               />
-              <input
-                onChange={onChangeHandler}
-                name="houseCity"
+              <InputField
+                label={"House City"}
+                name={"houseCity"}
+                type={"text"}
+                placeholder={"House City"}
                 value={profileData.address.houseCity}
-                type="text"
-                placeholder="City"
+                onChangeHandler={onChangeHandler}
               />
 
-              <input
-                onChange={onChangeHandler}
-                name="housePincode"
+              <InputField
+                label={"Pincode"}
+                name={"housePincode"}
+                type={"text"}
+                placeholder={"Pincode"}
                 value={profileData.address.housePincode}
-                type="number"
-                placeholder="Pincode"
+                onChangeHandler={onChangeHandler}
               />
             </div>
           </div>
@@ -319,78 +344,90 @@ const Profile = () => {
         <div className="profile-right flex flex-col w-[40%]">
           <h4 className="font-medium text-xl">Institution Details</h4>
           <div className="flex flex-col gap-4">
-            <input
-              className="w-full"
-              name="institutionName"
+            <InputField
+              label={"Institution Name"}
+              name={"institutionName"}
+              type={"text"}
+              placeholder={"ABC College"}
               value={profileData.institutionDetails.institutionName}
-              onChange={onChangeHandler}
-              type="text"
-              placeholder="Institution Name"
+              onChangeHandler={onChangeHandler}
             />
             <div className="address grid grid-cols-2 gap-4">
-              <input
-                name="institutionStreet"
+              <InputField
+                label={"Street"}
+                name={"institutionStreet"}
+                type={"text"}
+                placeholder={"Street"}
                 value={profileData.institutionDetails.institutionStreet}
-                onChange={onChangeHandler}
-                type="text"
-                placeholder="Street"
+                onChangeHandler={onChangeHandler}
               />
-              <input
-                name="institutionCity"
+              <InputField
+                label={"City"}
+                name={"institutionCity"}
+                type={"text"}
+                placeholder={"City"}
                 value={profileData.institutionDetails.institutionCity}
-                onChange={onChangeHandler}
-                type="text"
-                placeholder="City"
+                onChangeHandler={onChangeHandler}
               />
-              <input
-                name="institutionPincode"
+              <InputField
+                label={"Pincode"}
+                name={"institutionPincode"}
+                type={"text"}
+                placeholder={"Pincode"}
                 value={profileData.institutionDetails.institutionPincode}
-                onChange={onChangeHandler}
-                type="text"
-                placeholder="Pincode"
+                onChangeHandler={onChangeHandler}
               />
 
-              <input
-                name="institutionPhone"
+              <InputField
+                label={"Phone "}
+                name={"institutionPhone"}
+                type={"text"}
+                placeholder={"Phone"}
                 value={profileData.institutionDetails.institutionPhone}
-                onChange={onChangeHandler}
-                type="text"
-                placeholder="Phone"
+                onChangeHandler={onChangeHandler}
               />
             </div>
             <div className="items-center gap-4 grid grid-cols-2">
-              <input
-                type="text"
-                placeholder="Course Name"
-                name="courseName"
+              <InputField
+                label={"Course Name"}
+                name={"courseName"}
+                type={"text"}
+                placeholder={"Course Name"}
                 value={profileData.institutionDetails.course.courseName}
-                onChange={onChangeHandler}
+                onChangeHandler={onChangeHandler}
               />
-              <select
-                name="courseDuration"
-                className="mt-[12px] p-3 rounded-lg"
-                value={profileData.institutionDetails.course.courseDuration}
-                onChange={onChangeHandler}
-              >
-                <option value="">Duration of course</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-              </select>
-              <select
-                name="currentYear"
-                className="p-3 rounded-lg"
-                value={profileData.institutionDetails.course.currentYear}
-                onChange={onChangeHandler}
-              >
-                <option value="">Select course year</option>
-                {courseYearOption.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+              <div>
+                <label htmlFor="courseDuration">Course Duration</label>
+                <select
+                  name="courseDuration"
+                  className="mt-[12px] p-3 rounded-lg"
+                  value={profileData.institutionDetails.course.courseDuration}
+                  onChange={onChangeHandler}
+                  id="courseDuration"
+                >
+                  <option value="">Duration of course</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="courseDuration">Current Year</label>
+                <select
+                  name="currentYear"
+                  className="p-3 rounded-lg"
+                  value={profileData.institutionDetails.course.currentYear}
+                  onChange={onChangeHandler}
+                >
+                  <option value="">Select course year</option>
+                  {courseYearOption.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -399,7 +436,7 @@ const Profile = () => {
         onClick={onSubmit}
         className={`${
           isLoading ? "button-loading" : ""
-        } self-end mt-5 bg-primary-color text-white font-medium p-3 rounded-md transition-transform duration-100 hover:scale-105`}
+        } self-end mb-5 -mt-14 bg-primary-color text-white font-medium p-3 rounded-md transition-transform duration-100 hover:scale-105`}
       >
         <p className="button-text">Save Changes</p>
       </button>
