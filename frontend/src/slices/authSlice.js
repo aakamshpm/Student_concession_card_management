@@ -31,6 +31,7 @@ const authSlice = createSlice({
       if (studentInfo && studentInfo.expiration < Date.now()) {
         state.studentInfo = "";
         localStorage.removeItem("studentInfo");
+        localStorage.removeItem("jwt");
       }
     },
   },
