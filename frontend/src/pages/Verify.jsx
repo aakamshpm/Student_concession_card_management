@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BsFillCloudUploadFill } from "react-icons/bs";
+import { BsFillCloudUploadFill, BsUiChecksGrid } from "react-icons/bs";
 import { enqueueSnackbar } from "notistack";
 import {
   useUploadIdCardMutation,
@@ -10,7 +10,11 @@ import {
 
 const Verify = () => {
   const [preview, setPreview] = useState(null);
-  const { data: studentData, refetch } = useGetStudentDataQuery();
+  const {
+    data: studentData,
+    refetch,
+    isLoading: isStudentDataLoading,
+  } = useGetStudentDataQuery();
   const [uploadIdCard] = useUploadIdCardMutation();
   const [applyForVerification, { isLoading }] =
     useApplyForVerificationMutation();
@@ -50,7 +54,12 @@ const Verify = () => {
 
   useEffect(() => {
     refetch();
-  }, []);
+    if (!isStudentDataLoading && studentData?.studentIdCard)
+      setPreview(`http://localhost:8000/uploads/${studentData.studentIdCard}`);
+  }, [studentData]);
+
+  if (isStudentDataLoading)
+    return <p className="mt-5 ml-4 font-semibold">Loading...</p>;
 
   return (
     <div className="flex flex-col mt-5 w-max">
@@ -140,10 +149,10 @@ const Verify = () => {
       <button
         onClick={applyForIdVerification}
         className={`${isLoading ? "button-loading" : ""} self-end
-            mt-2 bg-primary-color text-white font-medium p-3 rounded-md ${
-              studentData?.eligibility?.status !== "false" &&
-              "opacity-60 cursor-not-allowed"
-            } ${
+          mt-2 bg-primary-color text-white font-medium p-3 rounded-md ${
+            studentData?.eligibility?.status !== "false" &&
+            "opacity-60 cursor-not-allowed"
+          } ${
           studentData?.eligibility?.status === "false" &&
           " transition-transform duration-100 hover:scale-105"
         }`}

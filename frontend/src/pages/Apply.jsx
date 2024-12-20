@@ -19,7 +19,12 @@ const Apply = () => {
     },
   ]);
 
-  const { data: studentData, error, refetch } = useGetStudentDataQuery();
+  const {
+    data: studentData,
+    error,
+    refetch,
+    isLoading: isStudentDataLoading,
+  } = useGetStudentDataQuery();
   const [applyForConcession, { isLoading }] = useApplyForConcessionMutation();
 
   useEffect(() => {
@@ -53,6 +58,9 @@ const Apply = () => {
       });
     }
   };
+
+  if (isStudentDataLoading)
+    return <p className="mt-5 ml-4 font-semibold">Loading...</p>;
 
   return (
     <div className="apply flex flex-col justify-center mt-7 w-max">
