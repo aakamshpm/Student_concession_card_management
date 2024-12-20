@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Concession Card</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .card-container {
+        display: flex;
+        flex-direction: column;
+
+        width: 500px;
+        border: 2px solid #ec0d0d;
+        padding: 8px;
+        border-radius: 8px;
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        text-align: center;
+
+        h1 {
+          padding: 8px;
+          width: 100%;
+          background-color: #ec0d0d;
+          margin-top: 10px;
+          margin-bottom: 0;
+        }
+
+        h2 {
+          margin: 0;
+          padding: 8px;
+          width: 100%;
+          background-color: gold;
+        }
+      }
+
+      .card-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .card-header img {
+        padding: 6px;
+        border: 2px solid #000;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+
+      .card-header .student-signature {
+        text-align: center;
+        padding: 10px;
+        border: 2px solid #000;
+        border-radius: 5px;
+        margin-top: 10px;
+
+        p {
+          margin-top: 40px;
+          margin-bottom: 1px;
+        }
+      }
+
+      .table-title {
+        margin-top: 0;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .footer {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        margin-top: 10px;
+
+        p {
+          margin: 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card-container">
+      <header>
+        <h1>STUDENT CONCESSION CARD</h1>
+        <h2>PRIVATE BUS</h2>
+      </header>
+
+      <div class="card-header">
+        <img src="{{studentPhoto}}" alt="" />
+        <div class="student-signature">
+          <p>Signature of student</p>
+        </div>
+      </div>
+
+      <div>
+        <p><strong>Name:</strong>{{name}}</p>
+        <p><strong>Age:</strong> {{age}}</p>
+        <p><strong>Date Of Birth:</strong> {{dateOfBirth}}</p>
+        <p>
+          <strong>Institution Name:</strong>
+          {{institutionDetails.institutionName}}
+        </p>
+        <p>
+          <strong>Course:</strong> {{institutionDetails.course.courseName}}
+          {{institutionDetails.course.currentYear}}
+        </p>
+        <p>
+          <strong>Duration of course:</strong>
+          {{institutionDetails.course.courseDuration}}
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <h3 class="table-title">Concession Routes</h3>
+        </thead>
+        <tr>
+          <td><strong>1.</strong> {{routes.0.startingPoint}}</td>
+          <td><strong>To</strong> {{routes.0.destination}}</td>
+        </tr>
+        <tr>
+          <td><strong>2.</strong> {{routes.1.startingPoint}}</td>
+          <td><strong>To</strong> {{routes.1.destination}}</td>
+        </tr>
+        <tr>
+          <td><strong>3.</strong> {{routes.2.startingPoint}}</td>
+          <td><strong>To</strong> {{routes.2.destination}}</td>
+        </tr>
+        <tr>
+          <td><strong>4.</strong> {{routes.3.startingPoint}}</td>
+          <td><strong>To</strong> {{routes.3.destination}}</td>
+        </tr>
+      </table>
+      <div class="footer">
+        <p>Date of Issue: {{issuedDate}}</p>
+        <p>Date of Expiry: {{expiryDate}}</p>
+      </div>
+    </div>
+  </body>
+</html>

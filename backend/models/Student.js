@@ -6,6 +6,7 @@ const studentSchema = new mongoose.Schema({
   password: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   dateOfBirth: { type: Date },
+  studentPhoto: { type: String },
   address: {
     houseName: { type: String },
     houseStreet: { type: String },
@@ -27,7 +28,12 @@ const studentSchema = new mongoose.Schema({
     },
   },
   studentIdCard: { type: String, default: null },
-  routes: [{ startingPoint: { type: String }, destination: { type: String } }],
+  routes: [
+    {
+      startingPoint: { type: String, uppercase: true },
+      destination: { type: String, uppercase: true },
+    },
+  ],
   application: {
     status: {
       type: String,
@@ -38,7 +44,7 @@ const studentSchema = new mongoose.Schema({
     lastUpdated: { type: Date, default: Date.now },
     reason: { type: String },
   },
-  concessionCardUrl: { type: String },
+  concessionCard: { type: String },
   eligibility: {
     status: {
       type: String,
@@ -49,6 +55,8 @@ const studentSchema = new mongoose.Schema({
     lastUpdated: { type: Date, default: Date.now },
     reason: { type: String },
   },
+  issuedDate: { type: Date },
+  expiryDate: { type: Date },
 });
 
 const Student = mongoose.model("Student", studentSchema);

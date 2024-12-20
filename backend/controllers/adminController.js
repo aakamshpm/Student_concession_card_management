@@ -1,5 +1,8 @@
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
+import puppeteer from "puppeteer";
+import fs from "fs";
+import path from "path";
 import generateToken from "../utils/generateToken.js";
 import Admin from "../models/Admin.js";
 import Student from "../models/Student.js";
@@ -141,7 +144,7 @@ const approveStudentConcessionCard = asyncHandler(async (req, res) => {
 
     if (["approved", "rejected"].includes(student.application.status)) {
       res.status(400);
-      throw new Error("Student already verified by admins");
+      throw new Error("Concession card approved by admins");
     }
 
     if (!decision) {
@@ -155,14 +158,21 @@ const approveStudentConcessionCard = asyncHandler(async (req, res) => {
       throw new Error("Please provide a reason for rejection");
     }
 
-    const concessionCardUrl = generateConcessionCard();
+    student.issuedDate = new Date();
+    student.expiryDate = new Date(
+      new Date().setFullYear(new Date().getFullYear() + 1)
+    );
+
+    const concessionCard = await generateConcessionCard(student, res);
 
     await Student.findByIdAndUpdate(
       studentId,
       {
-        concessionCardUrl,
+        concessionCard,
         "application.status": decision,
         "application.reason": reason,
+        issuedDate: student.issuedDate,
+        expiryDate: student.expiryDate,
       },
       { new: true }
     );
@@ -174,12 +184,69 @@ const approveStudentConcessionCard = asyncHandler(async (req, res) => {
   }
 });
 
-const generateConcessionCard = () => {};
-
 export {
   authAdmin,
   getStudentsAppliedForEligibility,
   getStudentsAppliedForApplication,
   verifyStudentId,
   approveStudentConcessionCard,
+};
+
+// Format the neccessary fields for concession card
+const formatData = (data) => {
+  const formatedData = {
+    name: data.firstName + " " + data.lastName,
+    age: data.age,
+    dateOfBirth: data.dateOfBirth.toLocaleDateString(),
+    institutionDetails: data.institutionDetails,
+    routes: data.routes,
+    issuedDate: data.issuedDate.toLocaleDateString(),
+    expiryDate: data.expiryDate.toLocaleDateString(),
+  };
+
+  return formatedData;
+};
+
+// function to dynamically change placeholders in template file
+const populateTemplate = (templatePath, data) => {
+  let template = fs.readFileSync(templatePath, "utf-8");
+
+  // Replace placeholders with actual data
+  const resolveValue = (path, obj) =>
+    path.split(".").reduce((acc, key) => (acc ? acc[key] : ""), obj);
+
+  template = template.replace(/{{([\w.]+)}}/g, (_, key) => {
+    return resolveValue(key, data) || "";
+  });
+
+  return template;
+};
+
+const generateConcessionCard = async (studentData, res) => {
+  try {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    const templatePath = path.resolve("./templates/concession-template.html");
+
+    const htmlContent = populateTemplate(templatePath, formatData(studentData));
+
+    await page.setContent(htmlContent);
+
+    // Create the card pdf
+    const outputFileName = `concession_card_${studentData._id}.pdf`;
+    await page.pdf({
+      path: `./uploads/concession-cards/${outputFileName}`,
+      format: "A4",
+      printBackground: true,
+    });
+
+    await browser.close();
+
+    return outputFileName;
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+    throw new Error(error.message);
+  }
 };

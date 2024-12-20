@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "path";
 import connectDB from "./config/db.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -21,6 +22,10 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 //middleware for parsing JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Static folder uploads
+const uploadsPath = path.resolve("./uploads");
+app.use("/uploads", express.static(uploadsPath));
 
 //Routes
 app.use("/api/students", studentRoutes);
