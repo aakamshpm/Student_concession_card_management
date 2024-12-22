@@ -28,7 +28,6 @@ const Login = () => {
 
   const [login] = useLoginMutation();
   const [register] = useRegisterMutation();
-  const { refetch } = useGetStudentDataQuery();
 
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
@@ -58,7 +57,7 @@ const Login = () => {
           : await register(data).unwrap();
 
       dispatch(setCredentials({ ...response.data }));
-      await refetch();
+      // await refetch();
       navigate("/");
     } catch (err) {
       enqueueSnackbar(err?.error || err?.data?.message, { variant: "error" });

@@ -26,13 +26,13 @@ const authSlice = createSlice({
       state.studentInfo = "";
       localStorage.removeItem("studentInfo");
     },
-    clearExpiredCredentials: (state) => {
+    clearExpiredCredentials: (state, action) => {
       const studentInfo = JSON.parse(localStorage.getItem("studentInfo"));
       if (studentInfo && studentInfo.expiration < Date.now()) {
         state.studentInfo = "";
         localStorage.removeItem("studentInfo");
-        localStorage.removeItem("jwt");
-      }
+        action.payload = true;
+      } else action.payload = false;
     },
   },
 });
