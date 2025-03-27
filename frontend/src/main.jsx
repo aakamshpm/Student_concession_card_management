@@ -18,6 +18,7 @@ import Apply from "./pages/Apply.jsx";
 import Verify from "./pages/Verify.jsx";
 import "./index.css";
 import Status from "./pages/Status.jsx";
+import Guidelines from "./pages/Guidelines.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -34,6 +35,7 @@ export const router = createBrowserRouter(
         <Route path="/apply" element={<Apply />} />
         <Route path="/verify" element={<Verify />} />
         <Route path="/status" element={<Status />} />
+        <Route path="/guidelines" element={<Guidelines />} />
       </Route>
     </Route>
   )

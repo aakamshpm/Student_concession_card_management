@@ -16,6 +16,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const onLogout = async () => {
+    setIsOpen(!isOpen);
     try {
       await logout().unwrap();
       dispatch(clearCredentials());
@@ -41,6 +42,9 @@ const Navbar = () => {
           <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
             <Link to="/status">Status</Link>
           </li>
+          <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
+            <Link to="/guidelines">Guidelines & Rules</Link>
+          </li>
         </ul>
       </div>
       <div className="navbar-left relative flex flex-col items-end">
@@ -63,7 +67,10 @@ const Navbar = () => {
           }`}
         >
           <ul className="list-none p-2 text-base">
-            <li className="text-lg cursor-pointer p-2 text-white rounded hover:scale-105 transition-transform duration-200">
+            <li
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-lg cursor-pointer p-2 text-white rounded hover:scale-105 transition-transform duration-200"
+            >
               <Link to="/profile">Profile</Link>
             </li>
             <li
