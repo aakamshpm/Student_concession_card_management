@@ -15,8 +15,6 @@ const App = () => {
       navigate("/login");
       logout();
     }
-
-    console.log("h");
   }, [dispatch]);
 
   return (

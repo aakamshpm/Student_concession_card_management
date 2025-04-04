@@ -9,8 +9,7 @@ import {
 } from "../slices/studentsApiSlice";
 import "react-phone-number-input/style.css";
 import InputField from "../components/InputField";
-
-//TODO:  pincode validate, city selection
+import { FiSave, FiLoader } from "react-icons/fi";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -40,6 +39,7 @@ const Profile = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   const {
     data: studentData,
@@ -49,166 +49,129 @@ const Profile = () => {
   const [update] = useUpdateMutation();
 
   const navigate = useNavigate();
-
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (studentData) {
-      setProfileData((prev) => {
-        return {
-          ...prev,
-          firstName: studentData?.firstName || prev.firstName,
-          lastName: studentData?.lastName || prev.lastName,
-          email: studentData?.email || prev.email,
-          address: {
-            houseName:
-              studentData?.address?.houseName || prev.address.houseName,
-            houseCity:
-              studentData?.address?.houseCity || prev.address.houseCity,
-            houseStreet:
-              studentData?.address?.houseStreet || prev.address.houseStreet,
-            housePincode:
-              studentData?.address?.housePincode || prev.address.housePincode,
+      const newData = {
+        firstName: studentData?.firstName || "",
+        lastName: studentData?.lastName || "",
+        email: studentData?.email || "",
+        dateOfBirth: studentData?.dateOfBirth
+          ? new Date(studentData.dateOfBirth).toISOString().split("T")[0]
+          : "",
+        address: {
+          houseName: studentData?.address?.houseName || "",
+          houseCity: studentData?.address?.houseCity || "",
+          houseStreet: studentData?.address?.houseStreet || "",
+          housePincode: studentData?.address?.housePincode || "",
+        },
+        mobile: studentData?.mobile || "",
+        institutionDetails: {
+          institutionName:
+            studentData?.institutionDetails?.institutionName || "",
+          institutionStreet:
+            studentData?.institutionDetails?.institutionStreet || "",
+          institutionCity:
+            studentData?.institutionDetails?.institutionCity || "",
+          institutionPincode:
+            studentData?.institutionDetails?.institutionPincode || "",
+          institutionPhone:
+            studentData?.institutionDetails?.institutionPhone || "",
+          course: {
+            courseName:
+              studentData?.institutionDetails?.course?.courseName || "",
+            currentYear:
+              studentData?.institutionDetails?.course?.currentYear || "",
+            courseDuration:
+              studentData?.institutionDetails?.course?.courseDuration || "",
           },
-          mobile: studentData?.mobile || prev.mobile,
-          institutionDetails: {
-            institutionName:
-              studentData?.institutionDetails?.institutionName ||
-              prev.institutionDetails.institutionName,
-            institutionStreet:
-              studentData?.institutionDetails?.institutionStreet ||
-              prev.institutionDetails.institutionStreet,
-            institutionCity:
-              studentData?.institutionDetails?.institutionCity ||
-              prev.institutionDetails.institutionCity,
-            institutionPincode:
-              studentData?.institutionDetails?.institutionPincode ||
-              prev.institutionDetails.institutionPincode,
-            institutionPhone:
-              studentData?.institutionDetails?.institutionPhone ||
-              prev.institutionDetails.institutionPhone,
-            course: {
-              courseName:
-                studentData?.institutionDetails?.course?.courseName ||
-                prev.institutionDetails.course.courseName,
-              currentYear:
-                studentData?.institutionDetails?.course?.currentYear ||
-                prev.institutionDetails.course.currentYear,
-              courseDuration:
-                studentData?.institutionDetails?.course?.courseDuration ||
-                prev.institutionDetails.course.courseDuration,
-            },
-          },
-        };
-      });
-      if (studentData.dateOfBirth) {
-        const date = new Date(studentData.dateOfBirth);
-
-        //Format the date to YYYY-MM-DD
-        const formattedDate = date.toISOString().split("T")[0];
-        setProfileData((prev) => ({
-          ...prev,
-          dateOfBirth: formattedDate,
-        }));
-      }
+        },
+      };
+      setProfileData(newData);
     }
   }, [studentData]);
 
   const onChangeHandler = (e) => {
     const { value, name } = e.target;
+    setIsDirty(true);
 
     setProfileData((prev) => {
-      //Check if name belongs to address object
       if (name in prev.address) {
-        return {
-          ...prev,
-          address: {
-            ...prev.address,
-            [name]: value,
-          },
-        };
+        return { ...prev, address: { ...prev.address, [name]: value } };
       }
-
-      //Check if name belongs institutionDetails
       if (name in prev.institutionDetails) {
         return {
           ...prev,
-          institutionDetails: {
-            ...prev.institutionDetails,
-            [name]: value,
-          },
+          institutionDetails: { ...prev.institutionDetails, [name]: value },
         };
       }
-
-      //Check if name belongs to course object in institutionDetails
       if (name in prev.institutionDetails.course) {
         return {
           ...prev,
           institutionDetails: {
             ...prev.institutionDetails,
-            course: {
-              ...prev.institutionDetails.course,
-              [name]: value,
-            },
+            course: { ...prev.institutionDetails.course, [name]: value },
           },
         };
       }
-
-      //updating fields outside any objects
-      return {
-        ...prev,
-        [name]: value,
-      };
+      return { ...prev, [name]: value };
     });
   };
 
-  const onSubmit = async () => {
+  const onSubmit = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
-    const isValid = validateFormData();
-    if (isValid) {
+
+    if (!isDirty) {
+      enqueueSnackbar("No changes to save", { variant: "info" });
+      setIsLoading(false);
+      return;
+    }
+
+    if (validateFormData()) {
       try {
         const res = await update(profileData).unwrap();
-        setIsLoading(false);
-        enqueueSnackbar(res?.message, { variant: "success" });
-      } catch (error) {
-        setIsLoading(false);
-        enqueueSnackbar(error?.error || error?.data?.message, {
-          variant: "error",
+        enqueueSnackbar(res?.message || "Profile updated successfully!", {
+          variant: "success",
+          autoHideDuration: 3000,
         });
+        setIsDirty(false);
+      } catch (error) {
+        enqueueSnackbar(
+          error?.error || error?.data?.message || "Update failed",
+          {
+            variant: "error",
+            autoHideDuration: 4000,
+          }
+        );
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
   const validateFormData = () => {
-    // PhoneInput component sets "mobile" to undefined if its empty
     if (!profileData.mobile) profileData.mobile = "";
-    else {
-      // validate mobile number
-      const isValid = isValidPhoneNumber(profileData.mobile);
-      if (!isValid) {
-        enqueueSnackbar("Please enter a valid mobile number", {
-          variant: "error",
-        });
-        setIsLoading(false);
-        return false;
-      }
+    else if (!isValidPhoneNumber(profileData.mobile)) {
+      enqueueSnackbar("Please enter a valid mobile number", {
+        variant: "error",
+      });
+      setIsLoading(false);
+      return false;
     }
 
-    // validate email
     if (!validator.isEmail(profileData.email)) {
       enqueueSnackbar("Please enter a valid email", { variant: "error" });
       setIsLoading(false);
       return false;
     }
 
-    // validate institution phone
     if (
-      !validator.isMobilePhone(
-        profileData.institutionDetails.institutionPhone
-      ) &&
-      profileData.institutionDetails.institutionPhone !== ""
+      profileData.institutionDetails.institutionPhone &&
+      !validator.isMobilePhone(profileData.institutionDetails.institutionPhone)
     ) {
-      enqueueSnackbar("Please enter a valid phone(Institution)", {
+      enqueueSnackbar("Please enter a valid institution phone", {
         variant: "error",
       });
       setIsLoading(false);
@@ -218,7 +181,6 @@ const Profile = () => {
     return true;
   };
 
-  // Generating courseyear dynamically
   const courseYearOption = Array.from(
     {
       length:
@@ -228,218 +190,283 @@ const Profile = () => {
   );
 
   if (error) {
-    enqueueSnackbar(error?.data.message || "Profile data not able to fetch", {
+    enqueueSnackbar(error?.data.message || "Failed to load profile data", {
       variant: "error",
     });
     navigate("/");
   }
 
-  if (isStudentDataLoading)
-    return <p className="mt-5 ml-4 font-semibold">Loading...</p>;
+  if (isStudentDataLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-color"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="profile input-fields flex flex-col">
-      <h2 className="font-[Volkhov] text-4xl font-bold mt-10 mb-4">Profile</h2>
-      <form className="profile-form flex gap-20 ">
-        <div className="profile-left w-[40%] flex flex-col gap-y-4">
-          <div className="profile-name">
-            <h4 className="font-medium text-xl">Personal</h4>
-            <div className="grid grid-cols-2 gap-4">
-              {/* First Name */}
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      {/* Header Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold font-['Volkhov'] text-primary-color">
+          Student Profile
+        </h1>
+        <p className="text-gray-600 mt-2">
+          Update your personal and institution details
+        </p>
+      </div>
+
+      {/* Form Section */}
+      <form
+        onSubmit={onSubmit}
+        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+      >
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Personal Information Column */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
+                Personal Information
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                <InputField
+                  label="First Name"
+                  name="firstName"
+                  type="text"
+                  placeholder="First Name"
+                  value={profileData.firstName}
+                  onChangeHandler={onChangeHandler}
+                  required
+                />
+                <InputField
+                  label="Last Name"
+                  name="lastName"
+                  type="text"
+                  placeholder="Last Name"
+                  value={profileData.lastName}
+                  onChangeHandler={onChangeHandler}
+                  required
+                />
+              </div>
               <InputField
-                label={"First Name"}
-                name={"firstName"}
-                type={"text"}
-                placeholder={"First Name"}
-                value={profileData.firstName}
-                onChangeHandler={onChangeHandler}
-              />
-              {/* Last Name */}
-              <InputField
-                label={"Last Name"}
-                name={"lastName"}
-                type={"text"}
-                placeholder={"Last Name"}
-                value={profileData.lastName}
-                onChangeHandler={onChangeHandler}
-              />
-              {/* Date Of Birth  */}
-              <InputField
-                label={"Date of Birth"}
-                name={"dateOfBirth"}
-                type={"date"}
-                placeholder={"Last Name"}
+                label="Date of Birth"
+                name="dateOfBirth"
+                type="date"
                 value={profileData.dateOfBirth}
                 onChangeHandler={onChangeHandler}
+                className="mt-4"
               />
             </div>
-          </div>
-          <div className="profile-email">
-            <h4 className="font-medium text-xl">Contact</h4>
-            <div className="grid grid-cols-2 gap-4">
+
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
+                Contact Information
+              </h2>
               <InputField
-                label={"Email"}
-                name={"email"}
-                type={"email"}
-                placeholder={"Enter your email"}
+                label="Email"
+                name="email"
+                type="email"
+                placeholder="student@example.com"
                 value={profileData.email}
                 onChangeHandler={onChangeHandler}
+                required
               />
-              <div className="phone-input">
-                <label htmlFor="mobile">Mobile</label>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mobile Number
+                </label>
                 <PhoneInput
                   defaultCountry="IN"
-                  onChange={(value) =>
-                    setProfileData((prevData) => ({
-                      ...prevData,
-                      mobile: value,
-                    }))
-                  }
-                  name="mobile"
+                  onChange={(value) => {
+                    setIsDirty(true);
+                    setProfileData((prev) => ({ ...prev, mobile: value }));
+                  }}
                   value={profileData.mobile}
-                  placeholder="Enter your mobile no"
+                  placeholder="Enter mobile number"
+                  className="border border-gray-300 rounded-md p-2 w-full focus:ring-primary-color focus:border-primary-color"
                 />
               </div>
             </div>
-          </div>
-          <div className="profile-address">
-            <h4 className="font-medium text-xl">Address</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <InputField
-                label={"House Name"}
-                name={"houseName"}
-                type={"text"}
-                placeholder={"Enter your House Name"}
-                value={profileData.address.houseName}
-                onChangeHandler={onChangeHandler}
-              />
-              <InputField
-                label={"House Street"}
-                name={"houseStreet"}
-                type={"text"}
-                placeholder={"House Street"}
-                value={profileData.address.houseStreet}
-                onChangeHandler={onChangeHandler}
-              />
-              <InputField
-                label={"House City"}
-                name={"houseCity"}
-                type={"text"}
-                placeholder={"House City"}
-                value={profileData.address.houseCity}
-                onChangeHandler={onChangeHandler}
-              />
 
-              <InputField
-                label={"Pincode"}
-                name={"housePincode"}
-                type={"text"}
-                placeholder={"Pincode"}
-                value={profileData.address.housePincode}
-                onChangeHandler={onChangeHandler}
-              />
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
+                Residential Address
+              </h2>
+              <div className="space-y-4">
+                <InputField
+                  label="House Name/Number"
+                  name="houseName"
+                  type="text"
+                  placeholder="House name/number"
+                  value={profileData.address.houseName}
+                  onChangeHandler={onChangeHandler}
+                />
+                <InputField
+                  label="Street"
+                  name="houseStreet"
+                  type="text"
+                  placeholder="Street address"
+                  value={profileData.address.houseStreet}
+                  onChangeHandler={onChangeHandler}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField
+                    label="City"
+                    name="houseCity"
+                    type="text"
+                    placeholder="City"
+                    value={profileData.address.houseCity}
+                    onChangeHandler={onChangeHandler}
+                  />
+                  <InputField
+                    label="Pincode"
+                    name="housePincode"
+                    type="text"
+                    placeholder="Pincode"
+                    value={profileData.address.housePincode}
+                    onChangeHandler={onChangeHandler}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="profile-right flex flex-col w-[40%]">
-          <h4 className="font-medium text-xl">Institution Details</h4>
-          <div className="flex flex-col gap-4">
-            <InputField
-              label={"Institution Name"}
-              name={"institutionName"}
-              type={"text"}
-              placeholder={"ABC College"}
-              value={profileData.institutionDetails.institutionName}
-              onChangeHandler={onChangeHandler}
-            />
-            <div className="address grid grid-cols-2 gap-4">
-              <InputField
-                label={"Street"}
-                name={"institutionStreet"}
-                type={"text"}
-                placeholder={"Street"}
-                value={profileData.institutionDetails.institutionStreet}
-                onChangeHandler={onChangeHandler}
-              />
-              <InputField
-                label={"City"}
-                name={"institutionCity"}
-                type={"text"}
-                placeholder={"City"}
-                value={profileData.institutionDetails.institutionCity}
-                onChangeHandler={onChangeHandler}
-              />
-              <InputField
-                label={"Pincode"}
-                name={"institutionPincode"}
-                type={"text"}
-                placeholder={"Pincode"}
-                value={profileData.institutionDetails.institutionPincode}
-                onChangeHandler={onChangeHandler}
-              />
 
+          {/* Institution Information Column */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
+                Institution Details
+              </h2>
               <InputField
-                label={"Phone "}
-                name={"institutionPhone"}
-                type={"text"}
-                placeholder={"Phone"}
-                value={profileData.institutionDetails.institutionPhone}
+                label="Institution Name"
+                name="institutionName"
+                type="text"
+                placeholder="Your college/school name"
+                value={profileData.institutionDetails.institutionName}
                 onChangeHandler={onChangeHandler}
+                required
               />
+              <div className="mt-4 grid grid-cols-2 gap-4">
+                <InputField
+                  label="Institution Phone"
+                  name="institutionPhone"
+                  type="tel"
+                  placeholder="Institution phone"
+                  value={profileData.institutionDetails.institutionPhone}
+                  onChangeHandler={onChangeHandler}
+                />
+                <InputField
+                  label="Institution Pincode"
+                  name="institutionPincode"
+                  type="text"
+                  placeholder="Pincode"
+                  value={profileData.institutionDetails.institutionPincode}
+                  onChangeHandler={onChangeHandler}
+                />
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-4">
+                <InputField
+                  label="Street"
+                  name="institutionStreet"
+                  type="text"
+                  placeholder="Institution street"
+                  value={profileData.institutionDetails.institutionStreet}
+                  onChangeHandler={onChangeHandler}
+                />
+                <InputField
+                  label="City"
+                  name="institutionCity"
+                  type="text"
+                  placeholder="Institution city"
+                  value={profileData.institutionDetails.institutionCity}
+                  onChangeHandler={onChangeHandler}
+                />
+              </div>
             </div>
-            <div className="items-center gap-4 grid grid-cols-2">
+
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
+                Course Details
+              </h2>
               <InputField
-                label={"Course Name"}
-                name={"courseName"}
-                type={"text"}
-                placeholder={"Course Name"}
+                label="Course Name"
+                name="courseName"
+                type="text"
+                placeholder="Your course name"
                 value={profileData.institutionDetails.course.courseName}
                 onChangeHandler={onChangeHandler}
+                required
               />
-              <div>
-                <label htmlFor="courseDuration">Course Duration</label>
-                <select
-                  name="courseDuration"
-                  className="mt-[12px] p-3 rounded-lg"
-                  value={profileData.institutionDetails.course.courseDuration}
-                  onChange={onChangeHandler}
-                  id="courseDuration"
-                >
-                  <option value="">Duration of course</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="courseDuration">Current Year</label>
-                <select
-                  name="currentYear"
-                  className="p-3 rounded-lg"
-                  value={profileData.institutionDetails.course.currentYear}
-                  onChange={onChangeHandler}
-                >
-                  <option value="">Select course year</option>
-                  {courseYearOption.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
+              <div className="mt-4 grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Course Duration (years)
+                  </label>
+                  <select
+                    name="courseDuration"
+                    value={profileData.institutionDetails.course.courseDuration}
+                    onChange={onChangeHandler}
+                    className="w-full border border-gray-300 rounded-md p-2.5 focus:ring-primary-color focus:border-primary-color"
+                  >
+                    <option value="">Select duration</option>
+                    {[1, 2, 3, 4].map((year) => (
+                      <option key={year} value={year}>
+                        {year} year{year > 1 ? "s" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Current Year
+                  </label>
+                  <select
+                    name="currentYear"
+                    value={profileData.institutionDetails.course.currentYear}
+                    onChange={onChangeHandler}
+                    disabled={
+                      !profileData.institutionDetails.course.courseDuration
+                    }
+                    className="w-full border border-gray-300 rounded-md p-2.5 focus:ring-primary-color focus:border-primary-color disabled:bg-gray-50"
+                  >
+                    <option value="">Select year</option>
+                    {courseYearOption.map((year) => (
+                      <option key={year} value={year}>
+                        Year {year}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Save Button */}
+        <div className="mt-8 flex justify-end border-t border-gray-100 pt-6">
+          <button
+            type="submit"
+            disabled={isLoading || !isDirty}
+            className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
+              isLoading || !isDirty
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-primary-color hover:bg-primary-dark"
+            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-color transition-colors`}
+          >
+            {isLoading ? (
+              <>
+                <FiLoader className="animate-spin mr-2" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <FiSave className="mr-2" />
+                Save Changes
+              </>
+            )}
+          </button>
+        </div>
       </form>
-      <button
-        onClick={onSubmit}
-        className={`${
-          isLoading ? "button-loading" : ""
-        } self-end mb-5 -mt-14 bg-primary-color text-white font-medium p-3 rounded-md transition-transform duration-100 hover:scale-105`}
-      >
-        <p className="button-text">Save Changes</p>
-      </button>
     </div>
   );
 };

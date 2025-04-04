@@ -19,6 +19,7 @@ import Verify from "./pages/Verify.jsx";
 import "./index.css";
 import Status from "./pages/Status.jsx";
 import Guidelines from "./pages/Guidelines.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -37,6 +38,8 @@ export const router = createBrowserRouter(
         <Route path="/status" element={<Status />} />
         <Route path="/guidelines" element={<Guidelines />} />
       </Route>
+
+      <Route path="*" element={<NotFound />} />
     </Route>
   )
 );

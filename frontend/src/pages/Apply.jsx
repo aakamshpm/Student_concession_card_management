@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CiCirclePlus } from "react-icons/ci";
+import { FiPlus, FiLoader } from "react-icons/fi";
 import { enqueueSnackbar } from "notistack";
 import {
   useApplyForConcessionMutation,
@@ -9,15 +9,10 @@ import StudentRoutesField from "../components/StudentRoutesField";
 import { Link } from "react-router-dom";
 
 const Apply = () => {
-  const [routeFieldComponent, setRouteFieldComponent] = useState([
-    <StudentRoutesField />,
-  ]);
   const [routes, setRoutes] = useState([
-    {
-      startingPoint: "",
-      destination: "",
-    },
+    { startingPoint: "", destination: "" },
   ]);
+  const maxRoutes = 4;
 
   const {
     data: studentData,
@@ -29,15 +24,12 @@ const Apply = () => {
 
   useEffect(() => {
     refetch();
-  }, []);
+  }, [refetch]);
 
   const addRouteField = () => {
-    setRoutes((prev) => [...prev, { startingPoint: "", destination: "" }]);
-
-    setRouteFieldComponent((prev) => [
-      ...prev,
-      <StudentRoutesField key={prev.length} />,
-    ]);
+    if (routes.length < maxRoutes) {
+      setRoutes((prev) => [...prev, { startingPoint: "", destination: "" }]);
+    }
   };
 
   const onChangeHandler = (i, e) => {
@@ -48,86 +40,153 @@ const Apply = () => {
       return newRoutes;
     });
   };
+
+  const removeRoute = (index) => {
+    if (routes.length > 1) {
+      setRoutes((prev) => prev.filter((_, i) => i !== index));
+    }
+  };
+
   const applyForConcessionCard = async () => {
     try {
+      // Validate at least one route is filled
+      if (routes.some((route) => !route.startingPoint || !route.destination)) {
+        enqueueSnackbar("Please fill all route fields", { variant: "warning" });
+        return;
+      }
+
       const response = await applyForConcession(routes).unwrap();
-      enqueueSnackbar(response.message, { variant: "success" });
+      enqueueSnackbar(
+        response.message || "Application submitted successfully!",
+        {
+          variant: "success",
+          autoHideDuration: 3000,
+        }
+      );
     } catch (err) {
-      enqueueSnackbar(err.data.message || "Something went wrong", {
+      enqueueSnackbar(err.data?.message || "Failed to submit application", {
         variant: "error",
+        autoHideDuration: 4000,
       });
     }
   };
 
-  if (isStudentDataLoading)
-    return <p className="mt-5 ml-4 font-semibold">Loading...</p>;
-
-  return (
-    <div className="apply flex flex-col justify-center mt-7 w-max">
-      <div className="flex flex-col">
-        <h2 className="text-3xl font-semibold font-[Volkhov]">
-          Apply for Student Concession Card
-        </h2>
-        {studentData?.application?.status !== "false" ? (
-          <p className="mt-3 text-red-500">
-            Student already applied for Concession card.
-          </p>
-        ) : studentData?.eligibility?.status === "false" ? (
-          <p className="mt-3 text-red-500">
+  const getStatusMessage = () => {
+    if (studentData?.application?.status !== "false") {
+      return {
+        text: "Student already applied for Concession card.",
+        color: "text-red-500",
+      };
+    }
+    if (studentData?.eligibility?.status === "false") {
+      return {
+        text: (
+          <>
             Student identity not verified.{" "}
-            <Link className="font-semibold" to="/verify">
+            <Link className="font-semibold hover:underline" to="/verify">
               Click to Verify
             </Link>
-          </p>
-        ) : studentData?.eligibility?.status === "pending" ? (
-          <p className="mt-3 text-red-500">
-            Student ID under verification. Please wait.
-          </p>
-        ) : studentData?.eligibility?.status === "approved" ? (
-          <p className="mt-3 text-green-500">
-            You are eligible for the Student Concession Card. Proceed with your
-            application.
-          </p>
-        ) : (
-          <></>
-        )}
+          </>
+        ),
+        color: "text-red-500",
+      };
+    }
+    if (studentData?.eligibility?.status === "pending") {
+      return {
+        text: "Student ID under verification. Please wait.",
+        color: "text-yellow-600",
+      };
+    }
+    if (studentData?.eligibility?.status === "approved") {
+      return {
+        text: "You are eligible for the Student Concession Card. Proceed with your application.",
+        color: "text-green-600",
+      };
+    }
+    return null;
+  };
 
-        {routeFieldComponent.map((item, i) => (
-          <StudentRoutesField
-            key={i}
-            i={i}
-            routes={routes}
-            onChangeHandler={onChangeHandler}
-          />
-        ))}
+  const statusMessage = getStatusMessage();
+  const canApply =
+    studentData?.eligibility?.status === "approved" &&
+    studentData?.application?.status === "false";
+
+  if (isStudentDataLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-color"></div>
       </div>
-      {!(routeFieldComponent.length >= 4) ? (
-        <div className="flex items-center">
-          <CiCirclePlus
-            onClick={addRouteField}
-            size="2em"
-            className="mx-3 cursor-pointer translate-transform duration-100 hover:scale-105"
-          />
-          <p>Add Route</p>
+    );
+  }
+
+  if (error) {
+    enqueueSnackbar("Failed to load student data", { variant: "error" });
+    return <Navigate to="/" replace />;
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto p-6">
+      {/* Header Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold font-['Volkhov'] text-primary-color">
+          Apply for Student Concession Card
+        </h1>
+        {statusMessage && (
+          <p className={`mt-2 ${statusMessage.color}`}>{statusMessage.text}</p>
+        )}
+      </div>
+
+      {/* Routes Section */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          Bus Route Information
+        </h2>
+
+        <div className="space-y-4">
+          {routes.map((_, i) => (
+            <StudentRoutesField
+              key={i}
+              index={i}
+              routes={routes}
+              onChangeHandler={onChangeHandler}
+              onRemove={routes.length > 1 ? removeRoute : null}
+            />
+          ))}
         </div>
-      ) : (
-        <></>
-      )}
-      <button
-        onClick={applyForConcessionCard}
-        className={`${
-          isLoading ? "button-loading" : ""
-        }  self-end bg-primary-color text-white font-medium p-3 rounded-md ${
-          studentData?.application?.status !== "false" &&
-          "opacity-60  cursor-not-allowed"
-        }  ${
-          studentData?.application?.status === "false" &&
-          "transition-transform duration-100 hover:scale-105"
-        }`}
-        disabled={studentData?.application.status !== "false"}
-      >
-        <p className="button-text">Apply</p>
-      </button>
+
+        {routes.length < maxRoutes && (
+          <button
+            type="button"
+            onClick={addRouteField}
+            className="mt-4 flex items-center text-primary-color hover:text-primary-dark transition-colors"
+          >
+            <FiPlus className="mr-2" />
+            Add Another Route
+          </button>
+        )}
+      </div>
+
+      {/* Submit Section */}
+      <div className="flex justify-end">
+        <button
+          onClick={applyForConcessionCard}
+          disabled={!canApply || isLoading}
+          className={`px-6 py-3 rounded-md font-medium text-white ${
+            !canApply || isLoading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-primary-color hover:bg-primary-dark"
+          } transition-colors flex items-center`}
+        >
+          {isLoading ? (
+            <>
+              <FiLoader className="animate-spin mr-2" />
+              Submitting...
+            </>
+          ) : (
+            "Submit Application"
+          )}
+        </button>
+      </div>
     </div>
   );
 };
