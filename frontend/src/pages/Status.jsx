@@ -39,72 +39,72 @@ const Status = () => {
   };
 
   return (
-    <div className="flex flex-col mt-7">
-      <h2 className="text-3xl font-semibold font-[Volkhov]">
+    <div className="bg-white rounded-lg shadow-md mt-10 p-6">
+      <h2 className="text-3xl font-semibold font-['Volkhov'] mb-6 text-primary-color">
         Application Status
       </h2>
-      <div className="bg-white rounded-lg shadow-md mt-3 p-6">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Field
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Applied Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Updated
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Reason
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  ID Verification
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {getStatusBadge(studentData?.eligibility?.status)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(studentData?.eligibility?.appliedDate) || "-"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(studentData?.eligibility?.lastUpdated) || "-"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {studentData?.eligibility?.reason || "-"}
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  Application
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {getStatusBadge(studentData?.application?.status)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(studentData?.application?.appliedDate) || "-"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(studentData?.application?.lastUpdated) || "-"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {studentData?.application?.reason || "-"}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
 
-        {/* <div className="mt-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Field
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Applied Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Last Updated
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Reason
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            <tr>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                ID Verification
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                {getStatusBadge(studentData?.eligibility?.status)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {formatDate(studentData?.eligibility?.appliedDate) || "-"}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {formatDate(studentData?.eligibility?.lastUpdated) || "-"}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {studentData?.eligibility?.reason || "-"}
+              </td>
+            </tr>
+            <tr>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                Application
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                {getStatusBadge(studentData?.application?.status)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {formatDate(studentData?.application?.appliedDate) || "-"}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {formatDate(studentData?.application?.lastUpdated) || "-"}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {studentData?.application?.reason || "-"}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* <div className="mt-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
         <h3 className="text-lg font-medium text-blue-800 mb-2">
           Status Legend
         </h3>
@@ -127,7 +127,6 @@ const Status = () => {
           </div>
         </div>
       </div> */}
-      </div>
     </div>
   );
 };

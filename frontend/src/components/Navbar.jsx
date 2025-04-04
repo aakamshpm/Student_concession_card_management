@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { CgUser } from "react-icons/cg";
@@ -6,84 +6,123 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "../slices/studentsApiSlice";
 import { clearCredentials } from "../slices/authSlice";
+import { FiLogOut, FiUser, FiX, FiCheck } from "react-icons/fi";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
   const [logout] = useLogoutMutation();
   const { studentInfo } = useSelector((state) => state.auth);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const onLogout = async () => {
-    setIsOpen(!isOpen);
+  const handleLogout = async () => {
     try {
       await logout().unwrap();
       dispatch(clearCredentials());
       navigate("/login");
     } catch (error) {
-      console.log(error?.data?.message || error?.message);
+      console.error(error?.data?.message || error?.message);
+    } finally {
+      setShowLogoutConfirmation(false);
+      setIsOpen(false);
     }
   };
 
   return (
-    <div className="flex justify-between mt-5 px-4 text-lg">
-      <div className="navbar-right">
-        <ul className="flex gap-6">
-          <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
-            <Link to="/">Home</Link>
-          </li>
-          <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
-            <Link to="/verify">Verify</Link>
-          </li>
-          <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
-            <Link to="/apply">Apply</Link>
-          </li>
-          <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
-            <Link to="/status">Status</Link>
-          </li>
-          <li className="text-lg cursor-pointer hover:scale-105 transform transition-transform duration-300">
-            <Link to="/guidelines">Guidelines & Rules</Link>
-          </li>
-        </ul>
-      </div>
-      <div className="navbar-left relative flex flex-col items-end">
-        <div className="flex justify-center items-center gap-1">
-          <CgUser size="25" />
-          <p className="text-lg text-primary-color">{studentInfo.firstName}</p>
-          <IoMdArrowDropdown
-            size="20"
-            className={`cursor-pointer transform transition-transform duration-[350ms] ${
-              isOpen ? "rotate-180" : ""
-            }`}
+    <>
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+            <h3 className="text-xl font-semibold mb-4">Confirm Logout</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to log out of your account?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowLogoutConfirmation(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
+              >
+                <FiX className="mr-2" />
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
+              >
+                <FiLogOut className="mr-2" />
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Navbar */}
+      <div className="flex justify-between items-center py-4 px-6 bg-white shadow-sm">
+        <div className="flex space-x-8">
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/verify">Verify</NavLink>
+          <NavLink to="/apply">Apply</NavLink>
+          <NavLink to="/status">Status</NavLink>
+          <NavLink to="/guidelines">Guidelines</NavLink>
+        </div>
+
+        <div className="relative">
+          <button
             onClick={() => setIsOpen(!isOpen)}
-          />
-        </div>
-        <div
-          className={`absolute mt-9 border border-[#F7F8FC] rounded-md shadow-lg bg-[#FA7436] transform transition-all duration-300 ease-out ${
-            isOpen
-              ? "opacity-100 scale-105"
-              : "opacity-0 scale-95 pointer-events-none"
-          }`}
-        >
-          <ul className="list-none p-2 text-base">
-            <li
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-lg cursor-pointer p-2 text-white rounded hover:scale-105 transition-transform duration-200"
-            >
-              <Link to="/profile">Profile</Link>
-            </li>
-            <li
-              onClick={onLogout}
-              className="text-lg cursor-pointer p-2 text-white rounded hover:scale-105 transition-transform duration-200"
-            >
-              Logout
-            </li>
-          </ul>
+            className="flex items-center space-x-2 focus:outline-none"
+          >
+            <div className="w-8 h-8 rounded-full bg-primary-color/10 flex items-center justify-center">
+              <CgUser className="text-primary-color" />
+            </div>
+            <span className="font-medium text-primary-color">
+              {studentInfo.firstName}
+            </span>
+            <IoMdArrowDropdown
+              className={`text-gray-500 transition-transform duration-200 ${
+                isOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          {/* Dropdown Menu */}
+          {isOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-40 border border-gray-100">
+              <Link
+                to="/profile"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                <FiUser className="mr-3" />
+                Profile
+              </Link>
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  setShowLogoutConfirmation(true);
+                }}
+                className="w-full text-left flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                <FiLogOut className="mr-3" />
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
+
+const NavLink = ({ to, children }) => (
+  <Link
+    to={to}
+    className="text-gray-600 hover:text-primary-color transition-colors font-medium"
+  >
+    {children}
+  </Link>
+);
 
 export default Navbar;
