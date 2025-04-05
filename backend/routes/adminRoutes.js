@@ -4,6 +4,7 @@ import {
   authAdmin,
   getStudentsAppliedForApplication,
   getStudentsAppliedForEligibility,
+  verifyQR,
   verifyStudentId,
 } from "../controllers/adminController.js";
 
@@ -16,5 +17,7 @@ router.get("/students-application", getStudentsAppliedForApplication);
 
 router.post("/verify-student", verifyStudentId);
 router.post("/approve-concession", approveStudentConcessionCard);
+
+router.post("/verify-qr", verifyQR);
 
 export default router;
