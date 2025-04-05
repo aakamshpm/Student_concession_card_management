@@ -1,7 +1,12 @@
-import admin from "firebase-admin"
+import admin from "firebase-admin";
+import dotenv from "dotenv";
 
-var serviceAccount = require("path/to/serviceAccountKey.json");
+dotenv.config();
+
+var serviceAccount = require(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+
+export default admin;

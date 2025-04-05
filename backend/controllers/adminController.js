@@ -1,14 +1,40 @@
 import asyncHandler from "express-async-handler";
-import bcrypt from "bcrypt";
 import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
 import generateToken from "../utils/generateToken.js";
 import Admin from "../models/Admin.js";
 import Student from "../models/Student.js";
+import admin from "../config/firebase.js";
 import QRCode from "qrcode";
 
-const authAdmin = asyncHandler(async (req, res) => {});
+const authAdmin = asyncHandler(async (req, res) => {
+  const { firebaseToken } = req.body;
+
+  if (!firebaseToken) {
+    res.status(400);
+    throw new Error("Firebase token is required!");
+  }
+
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
+    const phoneNumber = decodedToken.phone_number;
+
+    const adminUser = await Admin.findOne({ phoneNumber });
+
+    if (!adminUser) {
+      res.status(400);
+      throw new Error("Only registered admins can login!");
+    }
+
+    generateToken(res, adminUser.id, "admin");
+
+    res.status(200).json({ message: "Login Success" });
+  } catch (err) {
+    res.status(500);
+    throw new Error(err.message);
+  }
+});
 
 const getStudentsAppliedForEligibility = asyncHandler(async (req, res) => {
   try {
