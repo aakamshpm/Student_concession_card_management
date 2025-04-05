@@ -6,36 +6,9 @@ import path from "path";
 import generateToken from "../utils/generateToken.js";
 import Admin from "../models/Admin.js";
 import Student from "../models/Student.js";
+import QRCode from "qrcode";
 
-const authAdmin = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    res.status(401);
-    throw new Error("Enter required fields");
-  }
-
-  try {
-    const admin = await Admin.findOne({ username: username });
-    if (!admin) {
-      res.status(404);
-      throw new Error("Not authorized");
-    }
-    if (await bcrypt.compare(password, admin.password)) {
-      generateToken(res, admin._id, "admin");
-      res.status(200).json({
-        message: "Admin login successful",
-        data: { id: admin._id, name: admin.name },
-      });
-    } else {
-      res.status(401);
-      throw new Error("Password does not match");
-    }
-  } catch (err) {
-    res.status(401);
-    throw new Error(err.message);
-  }
-});
+const authAdmin = asyncHandler(async (req, res) => {});
 
 const getStudentsAppliedForEligibility = asyncHandler(async (req, res) => {
   try {
@@ -184,12 +157,38 @@ const approveStudentConcessionCard = asyncHandler(async (req, res) => {
   }
 });
 
+const verifyQR = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    if (!id) {
+      res.status(400);
+      throw new Error("Student ID is missing");
+    }
+
+    const student = await Student.findById(id).select("-password");
+
+    if (!student) {
+      res.status(400);
+      throw new Error("No Student found");
+    }
+
+    const isExpired = new Date(student.expiryDate) < new Date();
+
+    res.status(200).json({ isExpired: isExpired, studentData: student });
+  } catch (err) {
+    res.status(500);
+    throw new Error(err.message);
+  }
+});
+
 export {
   authAdmin,
   getStudentsAppliedForEligibility,
   getStudentsAppliedForApplication,
   verifyStudentId,
   approveStudentConcessionCard,
+  verifyQR,
 };
 
 // Format the neccessary fields for concession card
@@ -200,6 +199,7 @@ const formatData = (data) => {
     dateOfBirth: data.dateOfBirth.toLocaleDateString(),
     institutionDetails: data.institutionDetails,
     routes: data.routes,
+    qrCode: data.qrCode,
     issuedDate: data.issuedDate.toLocaleDateString(),
     expiryDate: data.expiryDate.toLocaleDateString(),
   };
@@ -224,6 +224,12 @@ const populateTemplate = (templatePath, data) => {
 
 const generateConcessionCard = async (studentData, res) => {
   try {
+    //QR generation
+    const encodedURL = `http:localhost:5000/verify?id=${studentData.id}`;
+
+    const qrImageData = await QRCode.toDataURL(encodedURL);
+    studentData.qrCode = qrImageData;
+
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
@@ -236,9 +242,16 @@ const generateConcessionCard = async (studentData, res) => {
     // Create the card pdf
     const outputFileName = `concession_card_${studentData._id}.pdf`;
     await page.pdf({
-      path: `./uploads/concession-cards/${outputFileName}`,
-      format: "A4",
+      path: outputFileName,
+      width: "600px",
+      height: "800px",
       printBackground: true,
+      margin: {
+        top: "0px",
+        bottom: "0px",
+        left: "0px",
+        right: "0px",
+      },
     });
 
     await browser.close();
