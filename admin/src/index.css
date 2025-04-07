@@ -7,3 +7,10 @@
 * {
   font-family: "Inter" sans-serif;
 }
+
+/* removing blue outline on react-phone-input */
+.input-phone-number input:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}

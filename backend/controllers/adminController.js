@@ -27,9 +27,9 @@ const authAdmin = asyncHandler(async (req, res) => {
       throw new Error("Only registered admins can login!");
     }
 
-    generateToken(res, adminUser.id, "admin");
+    const token = generateToken(res, adminUser.id, "admin");
 
-    res.status(200).json({ message: "Login Success" });
+    res.status(200).json({ message: "Login Success", token });
   } catch (err) {
     res.status(500);
     throw new Error(err.message);

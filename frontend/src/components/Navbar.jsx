@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { CgUser } from "react-icons/cg";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "../slices/studentsApiSlice";
 import { clearCredentials } from "../slices/authSlice";
 import { FiLogOut, FiUser, FiX, FiCheck } from "react-icons/fi";
+import NavLink from "./NavLink";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +16,29 @@ const Navbar = () => {
   const { studentInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const navItems = [
+    {
+      path: "/",
+      label: "Home",
+    },
+    {
+      path: "/verify",
+      label: "Verify",
+    },
+    {
+      path: "/apply",
+      label: "Apply",
+    },
+    {
+      path: "/status",
+      label: "Status",
+    },
+    {
+      path: "/guidelines",
+      label: "Guidelines",
+    },
+  ];
 
   const handleLogout = async () => {
     try {
@@ -62,11 +86,11 @@ const Navbar = () => {
       {/* Navbar */}
       <div className="flex justify-between items-center py-4 px-6 bg-white shadow-sm">
         <div className="flex space-x-8">
-          <NavLink to="/">Home</NavLink>
-          <NavLink to="/verify">Verify</NavLink>
-          <NavLink to="/apply">Apply</NavLink>
-          <NavLink to="/status">Status</NavLink>
-          <NavLink to="/guidelines">Guidelines</NavLink>
+          {navItems.map((item) => (
+            <NavLink to={item.path} key={item.path}>
+              {item.label}
+            </NavLink>
+          ))}
         </div>
 
         <div className="relative">
@@ -115,14 +139,5 @@ const Navbar = () => {
     </>
   );
 };
-
-const NavLink = ({ to, children }) => (
-  <Link
-    to={to}
-    className="text-gray-600 hover:text-primary-color transition-colors font-medium"
-  >
-    {children}
-  </Link>
-);
 
 export default Navbar;
