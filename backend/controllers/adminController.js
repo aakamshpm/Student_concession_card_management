@@ -245,6 +245,12 @@ const verifyQR = asyncHandler(async (req, res) => {
   }
 });
 
+// logout admin
+const logoutAdmin = asyncHandler(async (req, res) => {
+  res.cookie("jwt", "", { httpOnly: true, expiresIn: new Date(0) });
+  res.json({ message: "Logout successfull" });
+});
+
 export {
   authAdmin,
   getAllStudents,
@@ -254,4 +260,5 @@ export {
   verifyStudentId,
   approveStudentConcessionCard,
   verifyQR,
+  logoutAdmin,
 };

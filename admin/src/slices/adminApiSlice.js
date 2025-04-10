@@ -9,6 +9,7 @@ export const adminApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: `${ADMIN_URL}/all-students`,
         method: "GET",
+        credentials: "include",
       }),
     }),
 
@@ -17,6 +18,7 @@ export const adminApiSlice = apiSlice.injectEndpoints({
       query: (id) => ({
         url: `${ADMIN_URL}/get-student/${id}`,
         method: "GET",
+        credentials: "include",
       }),
     }),
 
@@ -25,6 +27,7 @@ export const adminApiSlice = apiSlice.injectEndpoints({
       query: (id) => ({
         url: `${ADMIN_URL}/students-eligibility`,
         method: "GET",
+        credentials: "include",
       }),
     }),
 
@@ -34,6 +37,7 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         url: `${ADMIN_URL}/verify-student`,
         method: "POST",
         body: data,
+        credentials: "include",
       }),
     }),
 
@@ -41,7 +45,8 @@ export const adminApiSlice = apiSlice.injectEndpoints({
     getAppliedForConcessionStudents: builder.query({
       query: () => ({
         url: `${ADMIN_URL}/students-application`,
-        method: "GEt",
+        method: "GET",
+        credentials: "include",
       }),
     }),
 
@@ -51,6 +56,16 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         url: `${ADMIN_URL}/approve-concession`,
         method: "POST",
         body: data,
+        credentials: "include",
+      }),
+    }),
+
+    //logout admin
+    logoutAdmin: builder.mutation({
+      query: () => ({
+        url: `${ADMIN_URL}/logout`,
+        method: "POST",
+        credentials: "include",
       }),
     }),
   }),
@@ -63,4 +78,5 @@ export const {
   useVerifyStudentMutation,
   useGetAppliedForConcessionStudentsQuery,
   useHandleApplicationMutation,
+  useLogoutAdminMutation,
 } = adminApiSlice;

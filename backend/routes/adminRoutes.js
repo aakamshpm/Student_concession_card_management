@@ -6,6 +6,7 @@ import {
   getStudentById,
   getStudentsAppliedForApplication,
   getStudentsAppliedForEligibility,
+  logoutAdmin,
   verifyQR,
   verifyStudentId,
 } from "../controllers/adminController.js";
@@ -13,6 +14,7 @@ import {
 const router = express.Router();
 
 router.post("/auth", authAdmin);
+router.post("/logout", logoutAdmin);
 
 router.get("/all-students", getAllStudents);
 router.get("/get-student/:id", getStudentById);

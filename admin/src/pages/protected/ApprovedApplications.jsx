@@ -156,31 +156,6 @@ const ApprovedApplications = () => {
             </div>
           )}
         </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-            <h3 className="text-gray-500 text-sm font-medium mb-1">
-              Total Approved
-            </h3>
-            <p className="text-2xl font-bold">1,248</p>
-            <p className="text-green-500 text-sm mt-1">↑ 12% from last month</p>
-          </div>
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-            <h3 className="text-gray-500 text-sm font-medium mb-1">
-              Expiring Soon
-            </h3>
-            <p className="text-2xl font-bold">42</p>
-            <p className="text-yellow-500 text-sm mt-1">Within next 30 days</p>
-          </div>
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-            <h3 className="text-gray-500 text-sm font-medium mb-1">
-              Avg. Processing Time
-            </h3>
-            <p className="text-2xl font-bold">2.4 days</p>
-            <p className="text-blue-500 text-sm mt-1">Improved by 18%</p>
-          </div>
-        </div>
       </div>
     </div>
   );
