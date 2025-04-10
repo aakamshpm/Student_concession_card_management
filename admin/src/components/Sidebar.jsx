@@ -39,16 +39,16 @@ const Sidebar = () => {
     },
     { path: "/students", icon: <FiUsers size={20} />, label: "Students" },
     {
+      path: "/verifications",
+      icon: <FiCheckCircle size={20} />,
+      label: "Verifications",
+    },
+    {
       path: "/applications",
       icon: <FiFileText size={20} />,
       label: "Applications",
     },
-    {
-      path: "/verified",
-      icon: <FiCheckCircle size={20} />,
-      label: "Verified",
-    },
-    { path: "/pending", icon: <FiClock size={20} />, label: "Pending" },
+
     {
       path: "/reports",
       icon: <FiBarChart2 size={20} />,
@@ -63,7 +63,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="h-screen w-64 bg-white shadow-lg fixed left-0 top-0 flex flex-col">
+    <div className="h-screen w-64 bg-white shadow-lg flex flex-col">
       {/* Logo/School Header */}
       <div className="p-4 border-b border-gray-200">
         <h1 className="text-xl text-center font-semibold text-primary-color font-['Volkhov']">

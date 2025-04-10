@@ -4,7 +4,7 @@ import Sidebar from "../components/Sidebar";
 
 const ProtectedRoute = () => {
   return isAuthenticated() ? (
-    <div flex>
+    <div className="flex w-full">
       <Sidebar />
       <Outlet />
     </div>

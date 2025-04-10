@@ -39,8 +39,6 @@ const Login = () => {
         { size: "invisible" }
       );
 
-      console.log(window.recaptchaVerifier);
-
       const confirmation = await signInWithPhoneNumber(
         auth,
         phoneNumber,
@@ -120,13 +118,29 @@ const Login = () => {
                   defaultCountry="IN"
                   value={phoneNumber}
                   onChange={setPhoneNumber}
+                  onKeyDown={(e) => {
+                    if (
+                      e.key === "Enter" &&
+                      phoneNumber &&
+                      !isLoading &&
+                      isValidPhoneNumber(phoneNumber)
+                    ) {
+                      sendOTP(phoneNumber);
+                    }
+                  }}
                   className="input-phone-number flex-1 border border-gray-300 rounded-lg px-4 py-3"
                 />
                 <button
                   onClick={() => sendOTP(phoneNumber)}
-                  disabled={!phoneNumber || isLoading}
+                  disabled={
+                    !phoneNumber ||
+                    isLoading ||
+                    !isValidPhoneNumber(phoneNumber)
+                  }
                   className={`p-3 rounded-lg ${
-                    !phoneNumber || isLoading
+                    !phoneNumber ||
+                    isLoading ||
+                    !isValidPhoneNumber(phoneNumber)
                       ? "bg-gray-300 cursor-not-allowed"
                       : "bg-primary-color hover:bg-primary-dark"
                   } text-white transition-colors`}
@@ -156,7 +170,22 @@ const Login = () => {
                 onChange={setOtp}
                 numInputs={6}
                 renderSeparator={<span className="mx-1"></span>}
-                renderInput={(props) => <input {...props} />}
+                renderInput={(props) => (
+                  <input
+                    {...props}
+                    onKeyDown={(e) => {
+                      props.onKeyDown?.(e);
+                      if (
+                        e.key === "Enter" &&
+                        otp &&
+                        otp.length === 6 &&
+                        !isLoading
+                      ) {
+                        verifyOTP(otp);
+                      }
+                    }}
+                  />
+                )}
                 inputStyle={{
                   width: "3rem",
                   height: "3rem",

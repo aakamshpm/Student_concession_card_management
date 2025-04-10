@@ -15,6 +15,10 @@ import PublicRoute from "./routes/PublicRoute.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import Dashboard from "./pages/protected/Dashboard.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import Students from "./pages/protected/Students.jsx";
+import StudentDetails from "./pages/protected/StudentDetails.jsx";
+import Verifications from "./pages/protected/Verifications.jsx";
+import Applications from "./pages/protected/Applications.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,6 +29,10 @@ export const router = createBrowserRouter(
 
       <Route element={<ProtectedRoute />}>
         <Route index element={<Dashboard />} />
+        <Route path="/students" element={<Students />} />
+        <Route path="/student/:id" element={<StudentDetails />} />
+        <Route path="/verifications" element={<Verifications />} />
+        <Route path="/applications" element={<Applications />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
