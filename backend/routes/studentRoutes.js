@@ -5,17 +5,17 @@ import {
   registerStudent,
   loginStudent,
   logoutStudent,
-  getStudentById,
   updateStudent,
   applyForCard,
   applyForVerification,
   uploadIdCard,
   checkVerificationStatus,
+  getStudentDetails,
 } from "../controllers/studentController.js";
 
 const router = express.Router();
 
-router.get("/", protect("student"), getStudentById);
+router.get("/", protect("student"), getStudentDetails);
 router.post("/register", registerStudent);
 router.post("/login", loginStudent);
 router.post("/logout", logoutStudent);

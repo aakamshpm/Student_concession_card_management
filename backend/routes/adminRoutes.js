@@ -2,6 +2,8 @@ import express from "express";
 import {
   approveStudentConcessionCard,
   authAdmin,
+  getAllStudents,
+  getStudentById,
   getStudentsAppliedForApplication,
   getStudentsAppliedForEligibility,
   verifyQR,
@@ -12,6 +14,8 @@ const router = express.Router();
 
 router.post("/auth", authAdmin);
 
+router.get("/all-students", getAllStudents);
+router.get("/get-student/:id", getStudentById);
 router.get("/students-eligibility", getStudentsAppliedForEligibility);
 router.get("/students-application", getStudentsAppliedForApplication);
 

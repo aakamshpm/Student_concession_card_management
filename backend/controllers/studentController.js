@@ -88,7 +88,7 @@ const logoutStudent = asyncHandler(async (req, res) => {
 });
 
 // Get individual student data
-const getStudentById = asyncHandler(async (req, res) => {
+const getStudentDetails = asyncHandler(async (req, res) => {
   const id = req.studentId;
 
   try {
@@ -304,7 +304,7 @@ export {
   registerStudent,
   loginStudent,
   logoutStudent,
-  getStudentById,
+  getStudentDetails,
   isStudentProfileComplete,
   updateStudent,
   uploadIdCard,

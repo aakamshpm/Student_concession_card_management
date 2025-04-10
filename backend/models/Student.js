@@ -44,7 +44,7 @@ const studentSchema = new mongoose.Schema({
     lastUpdated: { type: Date, default: Date.now },
     reason: { type: String },
   },
-  concessionCard: { type: String },
+  concessionCardUrl: { type: String },
   eligibility: {
     status: {
       type: String,

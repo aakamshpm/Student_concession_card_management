@@ -1,12 +1,10 @@
 import asyncHandler from "express-async-handler";
-import puppeteer from "puppeteer";
-import fs from "fs";
-import path from "path";
 import generateToken from "../utils/generateToken.js";
 import Admin from "../models/Admin.js";
 import Student from "../models/Student.js";
 import admin from "../config/firebase.js";
-import QRCode from "qrcode";
+import { generateConcessionCard } from "../utils/utils.js";
+import uploadPDF from "../middleware/uploadPDF.js";
 
 const authAdmin = asyncHandler(async (req, res) => {
   const { firebaseToken } = req.body;
@@ -36,6 +34,43 @@ const authAdmin = asyncHandler(async (req, res) => {
   }
 });
 
+//Get all students
+const getAllStudents = asyncHandler(async (req, res) => {
+  try {
+    const students = await Student.find().select(
+      "firstName lastName email institutionDetails.institutionName application.status mobile"
+    );
+    res.status(200).json({ data: students });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error.message);
+  }
+});
+
+// get student by ID
+const getStudentById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (!id) {
+      res.status(400);
+      throw new Error("No Student ID found passing");
+    }
+
+    const student = await Student.findById(id).select("-password");
+
+    if (!student) {
+      res.status(400);
+      throw new Error("No student found");
+    }
+
+    res.status(200).json({ data: student });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error.message);
+  }
+});
+
 const getStudentsAppliedForEligibility = asyncHandler(async (req, res) => {
   try {
     const students = await Student.find(
@@ -43,7 +78,7 @@ const getStudentsAppliedForEligibility = asyncHandler(async (req, res) => {
         "eligibility.status": "pending",
         "application.status": "false",
       },
-      "firstName lastName dateOfBirth email address institutionDetails studentIdCard"
+      "firstName lastName dateOfBirth email mobile address institutionDetails studentIdCard eligibility"
     );
     res.status(200).json({ data: students });
   } catch (err) {
@@ -164,10 +199,12 @@ const approveStudentConcessionCard = asyncHandler(async (req, res) => {
 
     const concessionCard = await generateConcessionCard(student, res);
 
+    const concessionCardUrl = await uploadPDF(concessionCard);
+
     await Student.findByIdAndUpdate(
       studentId,
       {
-        concessionCard,
+        concessionCardUrl,
         "application.status": decision,
         "application.reason": reason,
         issuedDate: student.issuedDate,
@@ -210,82 +247,11 @@ const verifyQR = asyncHandler(async (req, res) => {
 
 export {
   authAdmin,
+  getAllStudents,
+  getStudentById,
   getStudentsAppliedForEligibility,
   getStudentsAppliedForApplication,
   verifyStudentId,
   approveStudentConcessionCard,
   verifyQR,
-};
-
-// Format the neccessary fields for concession card
-const formatData = (data) => {
-  const formatedData = {
-    name: data.firstName + " " + data.lastName,
-    age: data.age,
-    dateOfBirth: data.dateOfBirth.toLocaleDateString(),
-    institutionDetails: data.institutionDetails,
-    routes: data.routes,
-    qrCode: data.qrCode,
-    issuedDate: data.issuedDate.toLocaleDateString(),
-    expiryDate: data.expiryDate.toLocaleDateString(),
-  };
-
-  return formatedData;
-};
-
-// function to dynamically change placeholders in template file
-const populateTemplate = (templatePath, data) => {
-  let template = fs.readFileSync(templatePath, "utf-8");
-
-  // Replace placeholders with actual data
-  const resolveValue = (path, obj) =>
-    path.split(".").reduce((acc, key) => (acc ? acc[key] : ""), obj);
-
-  template = template.replace(/{{([\w.]+)}}/g, (_, key) => {
-    return resolveValue(key, data) || "";
-  });
-
-  return template;
-};
-
-const generateConcessionCard = async (studentData, res) => {
-  try {
-    //QR generation
-    const encodedURL = `http:localhost:5000/verify?id=${studentData.id}`;
-
-    const qrImageData = await QRCode.toDataURL(encodedURL);
-    studentData.qrCode = qrImageData;
-
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    const templatePath = path.resolve("./templates/concession-template.html");
-
-    const htmlContent = populateTemplate(templatePath, formatData(studentData));
-
-    await page.setContent(htmlContent);
-
-    // Create the card pdf
-    const outputFileName = `concession_card_${studentData._id}.pdf`;
-    await page.pdf({
-      path: outputFileName,
-      width: "600px",
-      height: "800px",
-      printBackground: true,
-      margin: {
-        top: "0px",
-        bottom: "0px",
-        left: "0px",
-        right: "0px",
-      },
-    });
-
-    await browser.close();
-
-    return outputFileName;
-  } catch (error) {
-    console.log(error);
-    res.status(500);
-    throw new Error(error.message);
-  }
 };
