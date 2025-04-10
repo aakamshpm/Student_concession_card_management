@@ -50,9 +50,9 @@ const Sidebar = () => {
     },
 
     {
-      path: "/reports",
+      path: "/approved-applications",
       icon: <FiBarChart2 size={20} />,
-      label: "Reports",
+      label: "Approved Cards",
     },
     { path: "/profile", icon: <FiUser size={20} />, label: "Profile" },
     {

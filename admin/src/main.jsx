@@ -19,6 +19,7 @@ import Students from "./pages/protected/Students.jsx";
 import StudentDetails from "./pages/protected/StudentDetails.jsx";
 import Verifications from "./pages/protected/Verifications.jsx";
 import Applications from "./pages/protected/Applications.jsx";
+import ApprovedApplications from "./pages/protected/ApprovedApplications.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,6 +34,10 @@ export const router = createBrowserRouter(
         <Route path="/student/:id" element={<StudentDetails />} />
         <Route path="/verifications" element={<Verifications />} />
         <Route path="/applications" element={<Applications />} />
+        <Route
+          path="/approved-applications"
+          element={<ApprovedApplications />}
+        />
       </Route>
 
       <Route path="*" element={<NotFound />} />
