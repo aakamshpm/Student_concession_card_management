@@ -20,6 +20,7 @@ import "./index.css";
 import Status from "./pages/Status.jsx";
 import Guidelines from "./pages/Guidelines.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import ViewConcession from "./pages/ViewConcession.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -37,6 +38,7 @@ export const router = createBrowserRouter(
         <Route path="/verify" element={<Verify />} />
         <Route path="/status" element={<Status />} />
         <Route path="/guidelines" element={<Guidelines />} />
+        <Route path="/view-concession" element={<ViewConcession />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

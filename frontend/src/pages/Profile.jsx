@@ -439,6 +439,10 @@ const Profile = () => {
                 </div>
               </div>
             </div>
+
+            <div>
+              <input type="file" />
+            </div>
           </div>
         </div>
 

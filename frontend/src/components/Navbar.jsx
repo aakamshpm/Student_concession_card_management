@@ -38,6 +38,10 @@ const Navbar = () => {
       path: "/guidelines",
       label: "Guidelines",
     },
+    {
+      path: "/view-concession",
+      label: "View Concession",
+    },
   ];
 
   const handleLogout = async () => {

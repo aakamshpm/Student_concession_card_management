@@ -6,7 +6,7 @@ import {
   useGetStudentDataQuery,
 } from "../slices/studentsApiSlice";
 import StudentRoutesField from "../components/StudentRoutesField";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 const Apply = () => {
   const [routes, setRoutes] = useState([
@@ -72,6 +72,23 @@ const Apply = () => {
   };
 
   const getStatusMessage = () => {
+    if (studentData?.application?.status === "approved") {
+      return {
+        text: (
+          <>
+            Student Concession Approved.{" "}
+            <Link
+              className="font-semibold hover:underline"
+              to="/view-concession"
+            >
+              Click to view
+            </Link>
+          </>
+        ),
+        color: "text-green-600",
+      };
+    }
+
     if (studentData?.application?.status !== "false") {
       return {
         text: "Student already applied for Concession card.",
