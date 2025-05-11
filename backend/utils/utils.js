@@ -2,6 +2,7 @@ import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
 import QRCode from "qrcode";
+import { pathToFileURL } from "url";
 
 // Format the neccessary fields for concession card
 const formatData = (data) => {
@@ -9,6 +10,8 @@ const formatData = (data) => {
     name: data.firstName + " " + data.lastName,
     age: data.age,
     dateOfBirth: data.dateOfBirth.toLocaleDateString(),
+    studentPhoto: data.studentPhoto,
+
     institutionDetails: data.institutionDetails,
     routes: data.routes,
     qrCode: data.qrCode,
@@ -41,6 +44,17 @@ const generateConcessionCard = async (studentData, res) => {
 
     const qrImageData = await QRCode.toDataURL(encodedURL);
     studentData.qrCode = qrImageData;
+
+    // Student Photo URL Generation
+    const studentPhotoPath = path.resolve("uploads", studentData.studentPhoto);
+    const imageMime = "image/jpeg";
+
+    const imageBuffer = fs.readFileSync(studentPhotoPath);
+    const base64Image = `data:${imageMime};base64,${imageBuffer.toString(
+      "base64"
+    )}`;
+
+    studentData.studentPhoto = base64Image;
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();

@@ -38,7 +38,7 @@ const authAdmin = asyncHandler(async (req, res) => {
 const getAllStudents = asyncHandler(async (req, res) => {
   try {
     const students = await Student.find().select(
-      "firstName lastName email institutionDetails.institutionName application.status mobile"
+      "firstName lastName email studentPhoto institutionDetails.institutionName application.status mobile"
     );
     res.status(200).json({ data: students });
   } catch (error) {
@@ -78,7 +78,7 @@ const getStudentsAppliedForEligibility = asyncHandler(async (req, res) => {
         "eligibility.status": "pending",
         "application.status": "false",
       },
-      "firstName lastName dateOfBirth email mobile address institutionDetails studentIdCard eligibility"
+      "firstName lastName dateOfBirth email mobile address institutionDetails studentPhoto studentIdCard eligibility"
     );
     res.status(200).json({ data: students });
   } catch (err) {
