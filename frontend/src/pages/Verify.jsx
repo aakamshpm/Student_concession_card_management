@@ -11,14 +11,18 @@ import {
 
 const Verify = () => {
   const [preview, setPreview] = useState(null);
+
   const {
     data: studentData,
     refetch,
     isLoading: isStudentDataLoading,
   } = useGetStudentDataQuery();
+
   const [uploadIdCard] = useUploadIdCardMutation();
+
   const [applyForVerification, { isLoading }] =
     useApplyForVerificationMutation();
+
   const navigate = useNavigate();
 
   const handleIdCardUpload = async (e) => {

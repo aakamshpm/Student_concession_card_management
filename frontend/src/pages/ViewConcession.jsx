@@ -61,7 +61,8 @@ const ViewConcession = () => {
                   Concession Card PDF
                 </h3>
                 <p className="text-gray-500 mb-4">
-                  SC-2024-78945 | Expires: 15 June 2024
+                  SC-2024-78945 | Expires:{" "}
+                  {new Date(studentData.expiryDate).toLocaleDateString()}
                 </p>
                 <p className="text-sm text-gray-400 mb-2">
                   Your concession card will appear here

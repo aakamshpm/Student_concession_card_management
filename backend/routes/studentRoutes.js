@@ -11,6 +11,7 @@ import {
   uploadIdCard,
   checkVerificationStatus,
   getStudentDetails,
+  uploadStudentPhoto,
 } from "../controllers/studentController.js";
 
 const router = express.Router();
@@ -20,6 +21,12 @@ router.post("/register", registerStudent);
 router.post("/login", loginStudent);
 router.post("/logout", logoutStudent);
 router.post("/update", protect("student"), updateStudent);
+router.post(
+  "/upload-photo",
+  protect("student"),
+  upload.single("studentPhoto"),
+  uploadStudentPhoto
+);
 router.post(
   "/upload-id-card",
   protect("student"),

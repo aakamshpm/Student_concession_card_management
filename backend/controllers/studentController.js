@@ -103,6 +103,29 @@ const getStudentDetails = asyncHandler(async (req, res) => {
   }
 });
 
+// Upload student photo
+const uploadStudentPhoto = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    res.status(400);
+    throw new Error("No Photo Uploaded");
+  }
+  const student = await Student.findById(req.studentId);
+
+  if (student?.studentPhoto) {
+    fs.unlinkSync(`./uploads/${student.studentPhoto}`);
+  }
+
+  student.studentPhoto = req.file.filename;
+  await student.save();
+  res.status(200).json({ message: "Student Photo Uploaded" });
+
+  try {
+  } catch (err) {
+    res.status(500);
+    throw new Error(err.message);
+  }
+});
+
 // Update student data
 const updateStudent = asyncHandler(async (req, res) => {
   const id = req.studentId;
@@ -137,6 +160,7 @@ const isStudentProfileComplete = (student) => {
     !student.lastName ||
     !student.password ||
     !student.email ||
+    !student.studentPhoto ||
     !student.dateOfBirth ||
     !student.address?.houseName ||
     !student.address?.houseStreet ||
@@ -307,6 +331,7 @@ export {
   getStudentDetails,
   isStudentProfileComplete,
   updateStudent,
+  uploadStudentPhoto,
   uploadIdCard,
   applyForVerification,
   checkVerificationStatus,

@@ -6,10 +6,12 @@ import validator from "validator";
 import {
   useGetStudentDataQuery,
   useUpdateMutation,
+  useUploadStudentPhotoMutation,
 } from "../slices/studentsApiSlice";
 import "react-phone-number-input/style.css";
 import InputField from "../components/InputField";
 import { FiSave, FiLoader } from "react-icons/fi";
+import PhotoUploadSection from "../components/PhotoUploadSection";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -46,7 +48,11 @@ const Profile = () => {
     error,
     isLoading: isStudentDataLoading,
   } = useGetStudentDataQuery();
+
   const [update] = useUpdateMutation();
+
+  //Student Photo Upload Mutation
+  const [uploadStudentPhoto] = useUploadStudentPhotoMutation();
 
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -188,6 +194,33 @@ const Profile = () => {
     },
     (_, index) => index + 1
   );
+
+  const onStudentPhotoUpload = async (file) => {
+    try {
+      if (!file) return;
+      if (!file.type.match("image.*")) {
+        throw new Error("Only images are allowed");
+      }
+
+      // Check if the file is under 2 MB
+      if (file.size > 2 * 1024 * 1024) {
+        throw new Error("File must be less than 2 MB");
+      }
+
+      const formData = new FormData();
+      formData.append("studentPhoto", file);
+
+      const response = await uploadStudentPhoto(formData).unwrap();
+      enqueueSnackbar(response?.message || "Photo uploaded successfully!", {
+        variant: "success",
+        autoHideDuration: 3000,
+      });
+    } catch (error) {
+      enqueueSnackbar(error?.error || error?.data?.message || "Upload failed", {
+        variant: "error",
+      });
+    }
+  };
 
   if (error) {
     enqueueSnackbar(error?.data.message || "Failed to load profile data", {
@@ -440,9 +473,11 @@ const Profile = () => {
               </div>
             </div>
 
-            <div>
-              <input type="file" />
-            </div>
+            {/* Component to Handle Student Photo Upload  */}
+            <PhotoUploadSection
+              student={studentData}
+              onPhotoUpload={onStudentPhotoUpload}
+            />
           </div>
         </div>
 
