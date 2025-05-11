@@ -56,6 +56,7 @@ const Apply = () => {
       }
 
       const response = await applyForConcession(routes).unwrap();
+      refetch();
       enqueueSnackbar(
         response.message || "Application submitted successfully!",
         {

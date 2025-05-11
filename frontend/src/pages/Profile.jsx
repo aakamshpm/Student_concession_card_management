@@ -41,6 +41,8 @@ const Profile = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isPhoneInputFocused, setIsPhoneInputFocused] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
   const {
@@ -315,14 +317,20 @@ const Profile = () => {
                     setProfileData((prev) => ({ ...prev, mobile: value }));
                   }}
                   value={profileData.mobile}
+                  onFocus={() => setIsPhoneInputFocused(true)}
+                  onBlur={() => setIsPhoneInputFocused(false)}
                   placeholder="Enter mobile number"
-                  className="border border-gray-300 rounded-md p-2 w-full focus:ring-primary-color focus:border-primary-color"
+                  className={`input-phone-number border-2 rounded-md p-2 w-full ${
+                    !isPhoneInputFocused
+                      ? "border-gray-200 placeholder-gray-400"
+                      : "border-2 border-primary-color"
+                  } `}
                 />
               </div>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-gray-100">
                 Residential Address
               </h2>
               <div className="space-y-4">

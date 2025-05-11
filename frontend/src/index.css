@@ -16,6 +16,12 @@ body {
   min-height: 100vh;
 }
 
+.input-phone-number input:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
 .app {
   width: 80%;
   margin: auto;
