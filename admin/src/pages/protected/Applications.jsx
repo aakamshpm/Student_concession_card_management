@@ -145,7 +145,9 @@ const Applications = () => {
                   <div className="w-10 h-10 rounded-full bg-primary-color/10 flex items-center justify-center mr-3">
                     {student.studentPhoto ? (
                       <img
-                        src={student.studentPhoto}
+                        src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${
+                          student.studentPhoto
+                        }`}
                         alt="Student"
                         className="w-full h-full rounded-full object-cover"
                       />

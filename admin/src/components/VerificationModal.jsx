@@ -17,6 +17,7 @@ const VerificationModal = ({
   handleVerification,
   isVerifying,
 }) => {
+  console.log(student);
   const [reason, setReason] = useState("");
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -42,7 +43,9 @@ const VerificationModal = ({
               <div className="w-20 h-20 rounded-full bg-primary-color/10 flex items-center justify-center">
                 {student.studentPhoto ? (
                   <img
-                    src={student.studentPhoto}
+                    src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${
+                      student.studentPhoto
+                    }`}
                     alt="Student"
                     className="w-full h-full rounded-full object-cover"
                   />

@@ -97,7 +97,9 @@ const StudentDetail = () => {
             <div className="w-20 h-20 rounded-full bg-primary-color/10 flex items-center justify-center mr-4">
               {student.studentPhoto ? (
                 <img
-                  src={student.studentPhoto}
+                  src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${
+                    student.studentPhoto
+                  }`}
                   alt="Student"
                   className="w-full h-full rounded-full object-cover"
                 />

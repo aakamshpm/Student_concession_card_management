@@ -7,7 +7,6 @@ import {
   FiLogOut,
   FiUser,
   FiCheckCircle,
-  FiClock,
   FiBarChart2,
 } from "react-icons/fi";
 import { useDispatch } from "react-redux";

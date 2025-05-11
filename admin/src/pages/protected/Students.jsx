@@ -36,6 +36,8 @@ const Students = () => {
     }
   }, [isFetching]);
 
+  console.log(students);
+
   if (isLoading && !data) {
     return <LoadingSpinner />;
   }
@@ -92,7 +94,17 @@ const Students = () => {
               >
                 <div className="col-span-3 flex items-center">
                   <div className="w-10 h-10 rounded-full bg-primary-color/10 flex items-center justify-center mr-3">
-                    <FiUser className="text-primary-color" />
+                    {student?.studentPhoto ? (
+                      <img
+                        src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${
+                          student.studentPhoto
+                        }`}
+                        alt="Student"
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <FiUser className="text-primary-color" />
+                    )}
                   </div>
                   <div>
                     <p className="font-medium">

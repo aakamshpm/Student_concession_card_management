@@ -1,7 +1,6 @@
 import { FiAlertCircle, FiCheck, FiClock, FiX } from "react-icons/fi";
 
 const StatusBadge = ({ status }) => {
-  console.log(status);
   const statusConfig = {
     pending: {
       color: "bg-yellow-100 text-yellow-800",
