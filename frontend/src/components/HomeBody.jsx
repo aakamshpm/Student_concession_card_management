@@ -43,7 +43,7 @@ const HomeBody = () => {
       </div>
 
       {/* Current Card Status Section */}
-      <div className="current-status mb-12">
+      {/* <div className="current-status mb-12">
         <h2 className="text-3xl font-semibold font-['Volkhov'] mb-5">
           Your Current Card (DEMO)
         </h2>
@@ -70,12 +70,12 @@ const HomeBody = () => {
             Download Digital Card
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Notifications Section */}
       <div className="notifications">
         <h2 className="text-3xl font-semibold font-['Volkhov'] mb-5">
-          Notifications (DEMO)
+          Notifications
         </h2>
         <div className="notification-list space-y-4">
           <div className="notification-item p-4 border-l-4 border-primary-color bg-gray-50">

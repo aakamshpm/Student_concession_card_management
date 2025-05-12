@@ -11,6 +11,11 @@ const ViewConcession = () => {
     error: studentDataError,
   } = useGetStudentDataQuery();
 
+  // New Url generation everytime to prevent loading cached pdf (old pdf)
+  const concessionCardUrl = `${
+    studentData?.concessionCardUrl
+  }?cb=${Date.now()}`;
+
   if (isStudentDataLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -46,7 +51,13 @@ const ViewConcession = () => {
               </h1>
               <button className="flex items-center px-4 py-2 bg-primary-color text-white rounded-md hover:bg-primary-dark transition-colors">
                 <FiDownload className="mr-2" />
-                Download PDF
+                <a
+                  href={studentData.concessionCardUrl}
+                  download
+                  target="_blank"
+                >
+                  Download PDF
+                </a>
               </button>
             </div>
 
@@ -76,7 +87,7 @@ const ViewConcession = () => {
               {/* <ConcessionCardViewer url={studentData.concessionCardUrl} /> */}
 
               <iframe
-                src={`${studentData.concessionCardUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                src={`${concessionCardUrl}#toolbar=0&navpanes=0&scrollbar=0`}
                 width="100%"
                 height="1000px"
               />

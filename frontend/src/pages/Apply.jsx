@@ -175,8 +175,15 @@ const Apply = () => {
         {routes.length < maxRoutes && (
           <button
             type="button"
+            disabled={!canApply}
             onClick={addRouteField}
-            className="mt-4 flex items-center text-primary-color hover:text-primary-dark transition-colors"
+            className={`mt-4 flex items-center transition-colors
+    ${
+      canApply
+        ? "text-primary-color hover:text-primary-dark"
+        : "text-gray-400 cursor-not-allowed"
+    }
+  `}
           >
             <FiPlus className="mr-2" />
             Add Another Route

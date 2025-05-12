@@ -48,13 +48,23 @@ const generateConcessionCard = async (studentData, res) => {
     // Student Photo URL Generation
     const studentPhotoPath = path.resolve("uploads", studentData.studentPhoto);
     const imageMime = "image/jpeg";
-
     const imageBuffer = fs.readFileSync(studentPhotoPath);
     const base64Image = `data:${imageMime};base64,${imageBuffer.toString(
       "base64"
     )}`;
-
     studentData.studentPhoto = base64Image;
+
+    // Age Calculcation
+    const today = new Date();
+    const birthDateObj = new Date(studentData.dateOfBirth);
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDif = today.getMonth() - birthDateObj.getMonth();
+    if (
+      monthDif < 0 ||
+      (monthDif === 0 && birthDateObj.getDate() > today.getDate())
+    )
+      age--;
+    studentData.age = age;
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
