@@ -2,7 +2,7 @@ import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
 import QRCode from "qrcode";
-import { pathToFileURL } from "url";
+import { STUDENT_FRONTEND_URL } from "./constants.js";
 
 // Format the neccessary fields for concession card
 const formatData = (data) => {
@@ -40,7 +40,7 @@ const populateTemplate = (templatePath, data) => {
 const generateConcessionCard = async (studentData, res) => {
   try {
     //QR generation
-    const encodedURL = `http:localhost:5000/verify?id=${studentData.id}`;
+    const encodedURL = `${STUDENT_FRONTEND_URL}/verify?id=${studentData.id}`;
 
     const qrImageData = await QRCode.toDataURL(encodedURL);
     studentData.qrCode = qrImageData;

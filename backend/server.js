@@ -7,6 +7,7 @@ import connectDB from "./config/db.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
+import { ADMIN_FRONTEND_URL, STUDENT_FRONTEND_URL } from "./utils/constants.js";
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: [STUDENT_FRONTEND_URL, ADMIN_FRONTEND_URL],
     credentials: true,
   })
 );
